@@ -6,6 +6,11 @@
 *.exe
 *.o
 *.so
+*.pyc
+
+# GameData.js gets compiled from several source files. Better to keep this out of Git.
+# (use data_compiler.js to produce this file)
+GameData.js
 
 # Packages #
 ############

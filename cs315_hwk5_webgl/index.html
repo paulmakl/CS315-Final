@@ -1,14 +1,52 @@
+<!doctype html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="cs315.css" />
+
+<!-- load external dependencies -->
 <script src="jquery-1.10.2.min.js"></script>
 <script src="gl-matrix-min.js"></script>
 <script src="webgl-obj-loader.js"></script>
-<script src="cube.js"></script>
 
+<!-- load external files (precompiled into one javascript file) -->
+<script src="GameData.js"></script>
+
+<!-- load internal dependencies -->
+<script src="GameObject.js"></script>
+
+<!-- finally, load the game engine itself -->
+<script src="GameEngine.js"></script>
+
+<script>
+
+$(document).ready(function() {
+	// check if GameData has been parsed and loaded correctly
+	if (typeof DATA_LOADED != 'undefined' && DATA_LOADED == true) {
+		// start up the engine
+		var canvas = $('#glcanvas')[0];
+		WebGLSetup(canvas);
+		GameEngineSetup(canvas);
+	}
+	else {
+		$("#error").html("Could not load GameData.js. Did you run data_compiler.py?");
+		$("#error").fadeIn();
+		$("#game").hide();
+	}
+});
+
+</script>
 </head>
 <body>
-	<canvas  id="glcanvas"  width="800"  height="600">
+
+<!-- error messages can go here. hide by default -->
+<div id="error" style="display:none"></div>
+
+<div align="center" id="game">
+	<canvas id="glcanvas" width="800" height="600">
 		If you see this, your browser doesn't support HTML5 canvas elements!
 	</canvas>
+	<p id="credits">by Paul Makl and Judd Cohen</p>
+</div>
+
 </body>
 </html>
