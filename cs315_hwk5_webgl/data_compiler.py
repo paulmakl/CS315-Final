@@ -9,6 +9,7 @@ file and not need to worry about where those files come from.
 To configure this script, just edit the OUTPUT_FILE and INPUT_FILES variables
 at the top.
 """
+import os
 
 # save path
 OUTPUT_FILE = "GameData.js"
@@ -19,26 +20,53 @@ INPUT_FILES = [
     'fragment_shader.glsl',
     'FancyCube.obj',
     'teapot.obj',
-
     #'cube.obj',
     #'legoman.obj',
     #'legoman.mtl',
 ]
 
+# Strip comments, blank lines, and leading/trailing whitespace from input files
+# This should be set to False if debugging GLSL
+STRIP_INPUT_DATA = True
 
-def convertObjFile(fileName):
+
+def convertFile(fileName):
     output = []
 
-    objFile = open(fileName, 'r')
-    for line in objFile:
-        output.append('"%s\\n"' % line.strip())
+    if not os.path.exists(fileName):
+        raise IOError("Could not get file data for '%s'. File does not exist." % fileName)
+
+    fileData = open(fileName, 'r')
+    for line in fileData:
+        if STRIP_INPUT_DATA:
+            # skip blank lines
+            if len(line.strip()) == 0:
+                continue
+
+            # strip comments from GLSL files
+            if fileName.endswith(".glsl"):
+                lineData = line.split("//")
+                output.append('"%s\\n"' % lineData[0].strip())
+
+            else:
+                # strip comments from OBJ files
+                if fileName.endswith(".obj") and line.strip().startswith("#"):
+                    continue
+
+                output.append('"%s\\n"' % line.strip())
+        
+        else:
+            line = line.replace("\n", "\\n")
+            line = line.replace("\r", "\\r")
+            line = line.replace("\t", "\\t")
+            output.append('"%s"' % line)
 
     # make sure an empty file wont break the resulting output
     if len(output) == 0:
         output.append('""')
 
-    objFile.close()
-    
+    fileData.close()
+
     return "'%s':\n\t%s," % (fileName, " +\n\t".join(output))
 
 
@@ -65,7 +93,13 @@ if __name__ == "__main__":
 
     # generate output and tack that onto the file
     for fileName in INPUT_FILES:
-        output.append(convertObjFile(fileName))
+        print "Loading %s" % fileName
+        try:
+            fileData = convertFile(fileName)
+        except IOError, e:
+            print "ERROR: %s" % e
+            fileData = "'%s':\n\t\"\"," % fileName
+        output.append(fileData)
 
     # close the javascript dict
     output.append("\n};\n")
@@ -91,5 +125,6 @@ DATA.getFileList = function() {
 """)
 
     # save data
+    print "\nSaving to %s" % OUTPUT_FILE
     saveToFile("\n".join(output), OUTPUT_FILE)
 
