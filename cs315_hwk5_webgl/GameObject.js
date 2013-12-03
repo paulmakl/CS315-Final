@@ -8,7 +8,9 @@ function GameObject(name, mesh) {
 	this.scale = [1, 1, 1];
 
 
-	this.update = function() {
+	// GameObjects can be added to the engine's updateObject list.
+	// This would only be used by subclasses
+	this.update = function(timeSinceLastFrame) {
 
 	}
 
@@ -19,11 +21,6 @@ function GameObject(name, mesh) {
 			", pos=[" + this.position +
 			"], rot=[" + this.rotation +
 			"], scale=[" + this.scale + "]>";
-	}
-
-
-	this.draw = function() {
-		console.log("" + this);
 	}
 }
 
