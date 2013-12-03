@@ -10,6 +10,7 @@
 
 <!-- load helper scripts that don't directly depend on GameEngine -->
 <script src="MessageHandler.js"></script>
+<script src="MathHelpers.js"></script>
 
 <!-- load external files (precompiled into one javascript file) -->
 <script src="GameData.js"></script>
@@ -17,18 +18,23 @@
 <!-- load internal dependencies -->
 <script src="GameObject.js"></script>
 
-<!-- finally, load the game engine itself -->
+<!-- load the game engine -->
 <script src="GameEngine.js"></script>
+
+<!-- finally, load the game -->
+<script src="Breakout.js"></script>
 
 <script>
 
 $(document).ready(function() {
 	// check if GameData has been parsed and loaded correctly
 	if (typeof DATA_LOADED != 'undefined' && DATA_LOADED == true) {
-		// start up the engine
+		// get a reference to the canvas DOM node
 		var canvas = $('#glcanvas')[0];
-		WebGLSetup(canvas);
-		GameEngineSetup(canvas);
+		
+		WebGLSetup(canvas);       // set up WebGL
+		GameEngineSetup(canvas);  // set up GameEngine
+		BreakoutSetup();          // set up the actual game
 	}
 	else {
 		addErrorMessage("Could not load GameData.js. Did you run data_compiler.py?");

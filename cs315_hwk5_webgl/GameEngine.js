@@ -32,7 +32,19 @@ function GameEngine(canvasNode) {
 	this.mColorHandle = null;
 	this.mNormalHandle = null;
 
+	// timing variables
+	this.lastFrameTime = 0;
+	this.timeSinceLastFrame = 0;
+
+	// objects that need to get their update() methods called every frame
+	this.updateObjects = [];
+
+	// all GameObjects in the scene
+	this.gameObjects = [];
+
+	// all loaded meshes
 	this.mMeshes = {};
+
 
 	/*
 	 * Main GameEngine setup
@@ -92,16 +104,29 @@ function GameEngine(canvasNode) {
 
 
 	/*
+	 * Add a GameObject to the scene
+	 */
+	this.addUpdateObject = function(obj) {
+		this.updateObjects.push(obj);
+	}
+
+
+	/*
+	 * Add a GameObject to the scene
+	 */
+	this.addGameObject = function(obj) {
+		this.gameObjects.push(obj);
+	}
+
+
+	/*
 	 * Draws one frame
 	 */
 	this.drawFrame = function() {
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		var frameStartTime = Date.now() * 0.001;
+		this.timeSinceLastFrame = frameStartTime - this.lastFrameTime;
 
-		// rotate based on time
-		var time = Date.now() % 10000;
-		var angleInDegrees = (360.0 / 10000.0) * time;
-		var angleInRadians = angleInDegrees / 57.2957795;
-		var rotationAxis = vec3.fromValues(0.0, 1.0, 0.0);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 		gl.useProgram(this.shaderProgramHandle);
 
@@ -112,25 +137,27 @@ function GameEngine(canvasNode) {
 		this.mColorHandle = gl.getAttribLocation(this.shaderProgramHandle, "aColor");
 		this.mNormalHandle = gl.getAttribLocation(this.shaderProgramHandle, "aNormal");
 
-		// manipulate the model matrix
-		mat4.identity(this.mModelMatrix);
-		mat4.rotate(this.mModelMatrix, this.mModelMatrix, angleInRadians, rotationAxis);
-		// scale value for FancyCube:
-		mat4.scale(this.mModelMatrix, this.mModelMatrix, vec3.fromValues(4, 4, 4));
-		// scale value for Teapot:
-		//mat4.scale(this.mModelMatrix, this.mModelMatrix, vec3.fromValues(0.3, 0.3, 0.3));
+		// update all objects that requested update notifications
+		for (var i = this.updateObjects.length - 1; i >= 0; i--) {
+			this.updateObjects[i].update(this.timeSinceLastFrame);
+		};
 
 		//this.log("in draw frame");
-		
-		if (!$.isEmptyObject(this.mMeshes)) {
-			this.drawMesh(this.mMeshes.fancycube);
-			//this.drawMesh(this.mMeshes.teapot);
-		}
-		else {
-			this.log("mMeshes not yet loaded");
-		}
-		
+
+		for (var i = this.gameObjects.length - 1; i >= 0; i--) {
+			var obj = this.gameObjects[i];
+			// manipulate the model matrix
+			mat4.identity(this.mModelMatrix);
+			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[0]), UNIT_X);
+			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[1]), UNIT_Y);
+			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[2]), UNIT_Z);
+			mat4.scale(this.mModelMatrix, this.mModelMatrix, obj.scale);
+			this.drawMesh(this.mMeshes[obj.mesh]);
+		};
+
 		//this.log("end of drawFrame");
+
+		this.lastFrameTime = frameStartTime;
 
 		// we need to pass a function into requestAnimationFrame, so save a ref to the
 		// GameEngine object first. Required because "this" gets redefined inside the
@@ -239,6 +266,7 @@ function WebGLSetup(canvas) {
 		return;
 	}
 }
+
 
 
 /*
