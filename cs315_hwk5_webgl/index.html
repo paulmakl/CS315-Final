@@ -8,6 +8,9 @@
 <script src="gl-matrix-min.js"></script>
 <script src="webgl-obj-loader.js"></script>
 
+<!-- load helper scripts that don't directly depend on GameEngine -->
+<script src="MessageHandler.js"></script>
+
 <!-- load external files (precompiled into one javascript file) -->
 <script src="GameData.js"></script>
 
@@ -28,8 +31,7 @@ $(document).ready(function() {
 		GameEngineSetup(canvas);
 	}
 	else {
-		$("#error").html("Could not load GameData.js. Did you run data_compiler.py?");
-		$("#error").fadeIn();
+		addErrorMessage("Could not load GameData.js. Did you run data_compiler.py?");
 		$("#game").hide();
 	}
 });

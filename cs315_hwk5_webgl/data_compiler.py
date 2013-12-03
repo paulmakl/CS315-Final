@@ -18,8 +18,10 @@ OUTPUT_FILE = "GameData.js"
 INPUT_FILES = [
     ('VERTEX_SHADER',   'vertex_shader.glsl'),
     ('FRAGMENT_SHADER', 'fragment_shader.glsl'),
-    ('CUBE_OBJ',        'cube.obj'),
+    ('FANCYCUBE_OBJ',   'FancyCube.obj'),
     ('TEAPOT_OBJ',      'teapot.obj'),
+
+    #('CUBE_OBJ',        'cube.obj'),
     #('LEGOMAN_OBJ',     'legoman.obj'),
     #('LEGOMAN_MTL',     'legoman.mtl'),
 ]

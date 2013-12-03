@@ -43,7 +43,7 @@ function GameEngine(canvasNode) {
 			["aPosition", "aColor", "aNormal"]);
 		
 		if (this.shaderProgramHandle < 0) {
-			alert('Unable to initialize shaders.');
+			addErrorMessage('Unable to initialize shaders.');
 			return;
 		}
 
@@ -67,12 +67,11 @@ function GameEngine(canvasNode) {
 		var far = 20.0;
 		mat4.perspective(this.mProjectionMatrix, 45.0, ratio, near, far);
 
-
 		// Load model
 		this.log("loading models");
 
 		var meshes = {
-			'cube': new obj_loader.Mesh(CUBE_OBJ),
+			'fancycube': new obj_loader.Mesh(FANCYCUBE_OBJ),
 			'teapot': new obj_loader.Mesh(TEAPOT_OBJ),
 		};
 
@@ -87,7 +86,8 @@ function GameEngine(canvasNode) {
 	 */
 	this.initMeshes = function(meshes) {
 		this.mMeshes = meshes;
-		obj_utils.initMeshBuffers(gl, this.mMeshes.teapot); 
+		obj_utils.initMeshBuffers(gl, this.mMeshes.fancycube);
+		obj_utils.initMeshBuffers(gl, this.mMeshes.teapot);
 	}
 
 
@@ -115,12 +115,16 @@ function GameEngine(canvasNode) {
 		// manipulate the model matrix
 		mat4.identity(this.mModelMatrix);
 		mat4.rotate(this.mModelMatrix, this.mModelMatrix, angleInRadians, rotationAxis);
-		mat4.scale(this.mModelMatrix, this.mModelMatrix, vec3.fromValues(0.3, 0.3, 0.3));
+		// scale value for FancyCube:
+		mat4.scale(this.mModelMatrix, this.mModelMatrix, vec3.fromValues(4, 4, 4));
+		// scale value for Teapot:
+		//mat4.scale(this.mModelMatrix, this.mModelMatrix, vec3.fromValues(0.3, 0.3, 0.3));
 
 		//this.log("in draw frame");
 		
 		if (!$.isEmptyObject(this.mMeshes)) {
-			this.drawMesh(this.mMeshes.teapot);
+			this.drawMesh(this.mMeshes.fancycube);
+			//this.drawMesh(this.mMeshes.teapot);
 		}
 		else {
 			this.log("mMeshes not yet loaded");
