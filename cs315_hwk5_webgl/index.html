@@ -9,6 +9,7 @@
 <script src="webgl-obj-loader.js"></script>
 
 <!-- load helper scripts that don't directly depend on GameEngine -->
+<script src="WebGL.js"></script>
 <script src="MessageHandler.js"></script>
 <script src="MathHelpers.js"></script>
 
@@ -32,9 +33,12 @@ $(document).ready(function() {
 		// get a reference to the canvas DOM node
 		var canvas = $('#glcanvas')[0];
 		
-		WebGLSetup(canvas);       // set up WebGL
-		GameEngineSetup(canvas);  // set up GameEngine
-		BreakoutSetup();          // set up the actual game
+		//
+		// start the game
+		//
+		WebGLSetup(canvas);       // 1. set up WebGL
+		GameEngineSetup(canvas);  // 2. set up GameEngine
+		BreakoutSetup();          // 3. set up the actual game
 	}
 	else {
 		addErrorMessage("Could not load GameData.js. Did you run data_compiler.py?");

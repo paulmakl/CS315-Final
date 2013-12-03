@@ -1,4 +1,5 @@
 
+// game global:
 var breakout;
 
 
