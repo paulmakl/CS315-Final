@@ -13,21 +13,20 @@ at the top.
 # save path
 OUTPUT_FILE = "GameData.js"
 
-# first tuple element is the resulting javascript variable name
-# second tuple element is the path to the input file.
+# files that get compiled into javascript. text files only.
 INPUT_FILES = [
-    ('VERTEX_SHADER',   'vertex_shader.glsl'),
-    ('FRAGMENT_SHADER', 'fragment_shader.glsl'),
-    ('FANCYCUBE_OBJ',   'FancyCube.obj'),
-    ('TEAPOT_OBJ',      'teapot.obj'),
+    'vertex_shader.glsl',
+    'fragment_shader.glsl',
+    'FancyCube.obj',
+    'teapot.obj',
 
-    #('CUBE_OBJ',        'cube.obj'),
-    #('LEGOMAN_OBJ',     'legoman.obj'),
-    #('LEGOMAN_MTL',     'legoman.mtl'),
+    #'cube.obj',
+    #'legoman.obj',
+    #'legoman.mtl',
 ]
 
 
-def convertObjFile(varName, fileName):
+def convertObjFile(fileName):
     output = []
 
     objFile = open(fileName, 'r')
@@ -40,7 +39,7 @@ def convertObjFile(varName, fileName):
 
     objFile.close()
     
-    return "var %s =\n\t%s;" % (varName, " +\n\t".join(output))
+    return "'%s':\n\t%s," % (fileName, " +\n\t".join(output))
 
 
 def saveToFile(data, fileName):
@@ -57,18 +56,39 @@ if __name__ == "__main__":
     ]
 
     # List all input files in the header for easy readability
-    for varName, fileName in INPUT_FILES:
-        output.append("// %s = %s" % (varName, fileName))
+    output.append("// This script contains the following files:")
+    for fileName in INPUT_FILES:
+        output.append("// - %s" % fileName)
 
-    # seperator
-    output.append("")
+    # start the javascript dict
+    output.append("var DATA = {\n")
 
     # generate output and tack that onto the file
-    for varName, fileName in INPUT_FILES:
-        output.append(convertObjFile(varName, fileName))
+    for fileName in INPUT_FILES:
+        output.append(convertObjFile(fileName))
 
-    # a variable that's always in the output so scripts can tell if it's been loaded correctly
-    output.append("\nvar DATA_LOADED = true;\n")
+    # close the javascript dict
+    output.append("\n};\n")
+
+    # add function to test if the DATA object has a particular file
+    output.append("""
+DATA.hasFile = function(fileName) {
+    return this.hasOwnProperty(fileName);
+}
+""")
+
+    # add function to get a list of all files
+    output.append("""
+DATA.getFileList = function() {
+    var keys = [];
+    for (var key in DATA) {
+        if (DATA.hasFile(key) && key != \"hasFile\" && key != \"getFileList\") {
+            keys.push(key);
+        }
+    }
+    return keys;
+}
+""")
 
     # save data
     saveToFile("\n".join(output), OUTPUT_FILE)

@@ -55,7 +55,7 @@ function GameEngine(canvasNode) {
 		}
 
 		// initialize shaders
-		this.shaderProgramHandle = this.initShaders(VERTEX_SHADER, FRAGMENT_SHADER,
+		this.shaderProgramHandle = this.initShaders(DATA['vertex_shader.glsl'], DATA['fragment_shader.glsl'],
 			["aPosition", "aColor", "aNormal"]);
 		
 		if (this.shaderProgramHandle < 0) {
@@ -87,8 +87,8 @@ function GameEngine(canvasNode) {
 		this.log("loading models");
 
 		var meshes = {
-			'fancycube': new obj_loader.Mesh(FANCYCUBE_OBJ),
-			'teapot': new obj_loader.Mesh(TEAPOT_OBJ),
+			'fancycube': new obj_loader.Mesh(DATA['FancyCube.obj']),
+			'teapot': new obj_loader.Mesh(DATA['teapot.obj']),
 		};
 
 		this.initMeshes(meshes);
