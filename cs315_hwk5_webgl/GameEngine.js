@@ -147,6 +147,7 @@ function GameEngine(canvasNode) {
 			var obj = this.gameObjects[i];
 			// manipulate the model matrix
 			mat4.identity(this.mModelMatrix);
+			mat4.translate(this.mModelMatrix, this.mModelMatrix, obj.position);
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[0]), UNIT_X);
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[1]), UNIT_Y);
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[2]), UNIT_Z);
