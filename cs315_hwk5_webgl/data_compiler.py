@@ -9,6 +9,7 @@ file and not need to worry about where those files come from.
 To configure this script, just edit the OUTPUT_FILE and INPUT_FILES variables
 at the top.
 """
+import sys
 import os
 
 # save path
@@ -76,7 +77,7 @@ def saveToFile(data, fileName):
     fp.close()
 
 
-if __name__ == "__main__":
+def compileData(inputFiles):
     # output data list. each list item is a line in the output file.
     output = [
         # Output file header
@@ -85,14 +86,14 @@ if __name__ == "__main__":
 
     # List all input files in the header for easy readability
     output.append("// This script contains the following files:")
-    for fileName in INPUT_FILES:
+    for fileName in inputFiles:
         output.append("// - %s" % fileName)
 
     # start the javascript dict
     output.append("var DATA = {\n")
 
     # generate output and tack that onto the file
-    for fileName in INPUT_FILES:
+    for fileName in inputFiles:
         print "Loading %s" % fileName
         try:
             fileData = convertFile(fileName)
@@ -124,7 +125,37 @@ DATA.getFileList = function() {
 }
 """)
 
-    # save data
-    print "\nSaving to %s" % OUTPUT_FILE
-    saveToFile("\n".join(output), OUTPUT_FILE)
+    return "\n".join(output)
+
+
+
+if __name__ == "__main__":
+    # get rid of first "argument"
+    args = sys.argv[1:]
+
+    inputFiles = None
+    outputFile = None
+
+    # default to values at the top of this file
+    if len(args) == 0:
+        inputFiles = INPUT_FILES
+        outputFile = OUTPUT_FILE
+
+    elif len(args) == 1:
+        print "Syntax is:\n> data_compiler.py inFile1.ext inFile2.ext inFile3.ext outFile.js"
+
+    elif len(args) >= 2:
+        inputFiles = args[:-1] # all items except last one in list
+        outputFile = args[-1]  # last item in list
+
+    if inputFiles is not None and outputFile is not None:
+        print "Input files: %s" % inputFiles
+        print "Output file: %s\n" % outputFile
+
+        # compile
+        data = compileData(inputFiles)
+    
+        # save
+        print "\nSaving to %s" % outputFile
+        saveToFile(data, outputFile)
 
