@@ -49,6 +49,11 @@ function GameEngine(canvasNode) {
 	 * Main GameEngine setup
 	 */
 	this.init = function() {
+		if (typeof gl == 'undefined') {
+			addErrorMessage("Couldn't get a WebGL context to work with.");
+			return;
+		}
+
 		// initialize shaders
 		this.shaderProgramHandle = this.initShaders(VERTEX_SHADER, FRAGMENT_SHADER,
 			["aPosition", "aColor", "aNormal"]);
