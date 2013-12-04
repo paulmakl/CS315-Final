@@ -68,7 +68,7 @@ def convertFile(fileName):
 
     fileData.close()
 
-    return "'%s':\n\t%s," % (fileName, " +\n\t".join(output))
+    return "'%s': [\n\t%s].join(\"\")," % (fileName, ",\n\t".join(output))
 
 
 def saveToFile(data, fileName):
