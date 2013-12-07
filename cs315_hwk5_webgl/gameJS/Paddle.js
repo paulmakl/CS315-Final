@@ -1,6 +1,6 @@
 
 
-function Paddle(){
+function Paddle(keys, startPos, ){
 
 }
 

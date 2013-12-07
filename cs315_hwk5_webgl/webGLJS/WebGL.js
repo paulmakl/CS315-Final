@@ -8,7 +8,7 @@ var gl;
  */
 function WebGLSetup(canvas) {
     try {
-        gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+        gl = canvas.getContext("webgl"); //|| canvas.getContext("experimental-webgl");
     }
     catch (e) {}
     if (!gl) {

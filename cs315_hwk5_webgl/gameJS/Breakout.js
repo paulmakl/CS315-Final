@@ -15,8 +15,8 @@ function Breakout() {
 
 
 	this.init = function() {
-		this.paddle = new GameObject("paddle", "fancycube");
-		this.paddle.scale = [4, 4, 4];
+		this.paddle = new GameObject("paddle", "fancycube", -4, 0);
+		this.paddle.scale = [1, 4, 1];
 		engine.addGameObject(this.paddle);
 
 		// tell the engine we want update() to get called every frame
@@ -31,7 +31,6 @@ function Breakout() {
 		this.rotTimer += timeSinceLastFrame;
 		var angleInDegrees = (this.rotTimer * 20) % 360.0;
 		this.paddle.rotation[1] = angleInDegrees;
-
 		//
 		// calculate movement
 		//
@@ -43,9 +42,9 @@ function Breakout() {
 			this.moveTimer += timeSinceLastFrame;
 
 		if (this.dirFlip == true)
-			vec3.lerp(this.paddle.position, [0, 0, 0], [0, 0, -2], (-this.moveTimer) + 1.0);
+			vec3.lerp(this.paddle.position, this.paddle.position, this.paddle.position, (-this.moveTimer) + 1.0);
 		else
-			vec3.lerp(this.paddle.position, [0, 0, 0], [0, 0, -2], this.moveTimer);
+			vec3.lerp(this.paddle.position, this.paddle.position, this.paddle.position, this.moveTimer);
 	}
 }
 

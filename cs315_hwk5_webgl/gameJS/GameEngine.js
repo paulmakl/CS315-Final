@@ -88,7 +88,7 @@ function GameEngine(canvasNode) {
 
 		var meshes = {
 			'fancycube': new obj_loader.Mesh(DATA['FancyCube.obj']),
-			'teapot': new obj_loader.Mesh(DATA['teapot.obj']),
+			//'teapot': new obj_loader.Mesh(DATA['teapot.obj']),
 		};
 
 		this.initMeshes(meshes);
@@ -103,7 +103,7 @@ function GameEngine(canvasNode) {
 	this.initMeshes = function(meshes) {
 		this.mMeshes = meshes;
 		obj_utils.initMeshBuffers(gl, this.mMeshes.fancycube);
-		obj_utils.initMeshBuffers(gl, this.mMeshes.teapot);
+		//obj_utils.initMeshBuffers(gl, this.mMeshes.teapot);
 	}
 
 
