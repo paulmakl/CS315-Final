@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This script 'compiles' multiple text files into a single Javascript file
 containing strings that represent each input file.
