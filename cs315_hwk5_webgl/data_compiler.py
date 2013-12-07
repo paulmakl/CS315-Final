@@ -13,24 +13,19 @@ import sys
 import os
 
 # save path
-OUTPUT_FILE = "GameData.js"
+OUTPUT_FILE = os.path.join("gameJS", "GameData.js")
 
 # files that get compiled into javascript. text files only.
-INPUT_FILES = [
-    'vertex_shader.glsl',
-    'fragment_shader.glsl',
-    'FancyCube.obj',
-    'teapot.obj',
-    #'cube.obj',
-    #'legoman.obj',
-    #'legoman.mtl',
-]
+INPUT_DIRECTORY = "gameData"
 
 # Strip comments, blank lines, and leading/trailing whitespace from input files
 # This should be set to False if debugging GLSL
 STRIP_INPUT_DATA = True
 
 
+"""
+Converts a text file into a javascript dict entry
+"""
 def convertFile(fileName):
     output = []
 
@@ -62,21 +57,34 @@ def convertFile(fileName):
             line = line.replace("\t", "\\t")
             output.append('"%s"' % line)
 
+    # get rid of the open file handle
+    fileData.close()
+
     # make sure an empty file wont break the resulting output
     if len(output) == 0:
         output.append('""')
 
-    fileData.close()
+    # figure out what the javascript dict key should be
+    shortName = os.path.basename(fileName)
+    assert len(shortName) > 0
 
-    return "'%s': [\n\t%s].join(\"\")," % (fileName, ",\n\t".join(output))
+    # combine the file's output into a javascript dict entry that will result in one big string
+    return "'%s': [\n\t%s].join(\"\")," % (shortName, ",\n\t".join(output))
 
 
+"""
+Simply writes a string to a file.
+Replaces the original file's contents if it had any
+"""
 def saveToFile(data, fileName):
     fp = open(fileName, 'w')
     fp.write(data)
     fp.close()
 
 
+"""
+Returns a javascript dictionary containing all input files (as a string)
+"""
 def compileData(inputFiles):
     # output data list. each list item is a line in the output file.
     output = [
@@ -133,25 +141,28 @@ if __name__ == "__main__":
     # get rid of first "argument"
     args = sys.argv[1:]
 
-    inputFiles = None
+    inputDir = None
     outputFile = None
 
     # default to values at the top of this file
     if len(args) == 0:
-        inputFiles = INPUT_FILES
+        inputDir = INPUT_DIRECTORY
         outputFile = OUTPUT_FILE
 
-    elif len(args) == 1:
-        print "Syntax is:\n> data_compiler.py inFile1.ext inFile2.ext inFile3.ext outFile.js"
+    elif len(args) == 1 or len(args) > 2:
+        print "Syntax is:\n> data_compiler.py inputDirectoryName outFile.js"
 
-    elif len(args) >= 2:
-        inputFiles = args[:-1] # all items except last one in list
-        outputFile = args[-1]  # last item in list
+    elif len(args) == 2:
+        inputDir = args[0]
+        outputFile = args[1]
 
-    if inputFiles is not None and outputFile is not None:
-        print "Input files: %s" % inputFiles
+    if inputDir is not None and outputFile is not None:
+        print "Input directory: %s" % inputDir
         print "Output file: %s\n" % outputFile
 
+        # make file list
+        inputFiles = [ os.path.join(inputDir, fileName) for fileName in os.listdir(inputDir) ]
+        
         # compile
         data = compileData(inputFiles)
     
