@@ -72,7 +72,7 @@ function GameEngine(canvasNode) {
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
 		// SET UP VIEW MATRIX
-		var eye = vec3.fromValues(0.0, 0.0, 10.0);
+		var eye = vec3.fromValues(0.0, 10.0, 3.0);
 		var look = vec3.fromValues(0.0, 0.0, 0.0);
 		var up = vec3.fromValues(0.0, 1.0, 0.0);
 		mat4.lookAt(this.mViewMatrix, eye, look, up);
@@ -88,7 +88,7 @@ function GameEngine(canvasNode) {
 
 		var meshes = {
 			'fancycube': new obj_loader.Mesh(DATA['FancyCube.obj']),
-			'teapot': new obj_loader.Mesh(DATA['teapot.obj']),
+			'ball': new obj_loader.Mesh(DATA['Ball.obj']),
 		};
 
 		this.initMeshes(meshes);
@@ -103,7 +103,7 @@ function GameEngine(canvasNode) {
 	this.initMeshes = function(meshes) {
 		this.mMeshes = meshes;
 		obj_utils.initMeshBuffers(gl, this.mMeshes.fancycube);
-		obj_utils.initMeshBuffers(gl, this.mMeshes.teapot);
+		obj_utils.initMeshBuffers(gl, this.mMeshes.ball);
 	}
 
 
@@ -157,7 +157,7 @@ function GameEngine(canvasNode) {
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[1]), UNIT_Y);
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[2]), UNIT_Z);
 			mat4.scale(this.mModelMatrix, this.mModelMatrix, obj.scale);
-			this.drawMesh(this.mMeshes[obj.mesh]);
+			this.drawMesh(this.mMeshes[obj.mesh], obj.color);
 		};
 
 		//this.log("end of drawFrame");
@@ -177,7 +177,7 @@ function GameEngine(canvasNode) {
 	/*
 	 * draws a 1x1x1 cube with the current transformation
 	 */
-	this.drawMesh = function(mesh) {
+	this.drawMesh = function(mesh, color) {
 		mat4.mul(this.mMVMatrix, this.mViewMatrix, this.mModelMatrix);
 		mat4.mul(this.mMVPMatrix, this.mProjectionMatrix, this.mMVMatrix);
 
@@ -196,7 +196,7 @@ function GameEngine(canvasNode) {
 		gl.enableVertexAttribArray(this.mNormalHandle);
 
 		// specify the color
-		var color = vec4.fromValues(0.8, 0.2, 0.2, 1.0);
+		var color = vec4.fromValues(color[0], color[1], color[2], 1.0);
 		gl.vertexAttrib4fv(this.mColorHandle, color);
 
 		// draw as an indexed buffer

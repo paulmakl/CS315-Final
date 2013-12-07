@@ -1,0 +1,12 @@
+Collider class requirements:
+	constructor:
+		GameObject obj -> The parent GameObject. Should set this.gameObject to this value.
+
+	fields:
+		GameObject gameObject -> A reference to the parent GameObject
+		String shape -> What type of shape the class is
+
+	methods:
+		intersects(Collider col) ->
+			Returns true if this shape intersects with the other shape, otherwise false
+

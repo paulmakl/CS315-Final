@@ -6,6 +6,7 @@ function GameObject(name, mesh) {
 	this.position = [0, 0, 0];
 	this.rotation = [0, 0, 0]; // degrees
 	this.scale = [1, 1, 1];
+	this.color = [1, 0, 0];
 	this.collider = null;
 
 
