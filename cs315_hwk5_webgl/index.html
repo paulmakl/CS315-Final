@@ -11,6 +11,7 @@
 <!-- load helper scripts that don't directly depend on GameEngine -->
 <script src="webGLJS/WebGL.js"></script>
 <script src="webGLJS/MathHelpers.js"></script>
+<script src="gameJS/InputHandler.js"></script>
 <script src="gameJS/MessageHandler.js"></script>
 
 <!-- load external files (precompiled into one javascript file) -->
@@ -39,9 +40,10 @@ $(document).ready(function() {
 		//
 		// start the game
 		//
-		WebGLSetup(canvas);       // 1. set up WebGL
-		GameEngineSetup(canvas);  // 2. set up GameEngine
-		BreakoutSetup();          // 3. set up the actual game
+		InputSetup();             // 1. set up input handling
+		WebGLSetup(canvas);       // 2. set up WebGL
+		GameEngineSetup(canvas);  // 3. set up GameEngine
+		BreakoutSetup();          // 4. set up the actual game
 	}
 	else {
 		addErrorMessage("Could not load GameData.js. Did you run data_compiler.py?");

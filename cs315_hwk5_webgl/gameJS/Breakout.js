@@ -17,6 +17,9 @@ function Breakout() {
 
 
 	this.init = function() {
+		// tell the input system we want all input events (requires inputEvent(key,evt) method)
+		input.addUpdateObject(this);
+
 		// create the ball
 		this.ball = new GameObject("ball", "ball");
 		this.ball.collider = new CircleCollider(this.ball);
@@ -24,12 +27,15 @@ function Breakout() {
 		engine.addGameObject(this.ball);
 
 		// create a block
-		var block = new GameObject("block", "fancycube");
-		block.collider = new RectangleCollider(block);
-		block.position = [0, 0, 0];
-		engine.addGameObject(block);
-
-		this.blocks.push(block);
+		for (var i=0; i<2; i++) {
+			var block = new GameObject("block_" + i, "fancycube");
+			block.collider = new RectangleCollider(block);
+			block.position = [0, 0, i];
+			engine.addGameObject(block);
+			this.blocks.push(block);
+		}
+		this.blocks[0].position = [0, 0, -5];
+		this.blocks[1].position = [0, 0, 5];
 
 		// create the paddles
 		this.paddle1 = new GameObject("paddle1", "fancycube");
@@ -44,43 +50,56 @@ function Breakout() {
 
 		// tell the engine we want update() to get called every frame
 		engine.addUpdateObject(this);
-	}
+	};
+
+
+	this.inputEvent = function(key, evt) {
+		//console.log(key);
+		//console.log(evt);
+	};
 
 
 	this.update = function(timeSinceLastFrame) {
-		//
-		// calculate smooth rotation
-		//
-		//this.rotTimer += timeSinceLastFrame;
-		//var angleInDegrees = (this.rotTimer * 20) % 360.0;
-		//this.paddle1.rotation[1] = angleInDegrees;
-
-		//
-		// calculate movement
-		//
-		if (this.moveTimer > 1.0) {
-			this.moveTimer = 0;
-			this.dirFlip = !this.dirFlip; // toggle depth direction
+		//TODO: bounds check. range seems to be roughly 3 to -5 for now.
+		// check up/down keys for player 1
+		if (input.keyIsDown("M")) {
+			this.paddle1.position[2] += 6.5 * timeSinceLastFrame;
 		}
-		else
-			this.moveTimer += timeSinceLastFrame;
+		else if (input.keyIsDown("K")) {
+			this.paddle1.position[2] -= 6.5 * timeSinceLastFrame;
+		}
 
-		if (this.dirFlip == true)
-			vec3.lerp(this.ball.position, [0, 0, 3], [0, 0, -3], (-this.moveTimer) + 1.0);
-		else
-			vec3.lerp(this.ball.position, [0, 0, 3], [0, 0, -3], this.moveTimer);
+		// check up/down keys for player 2
+		if (input.keyIsDown("Z")) {
+			this.paddle2.position[2] += 6.5 * timeSinceLastFrame;
+		}
+		else if (input.keyIsDown("A")) {
+			this.paddle2.position[2] -= 6.5 * timeSinceLastFrame;
+		}
 
-		// test collisions
-		if (this.blocks.length > 0) {
-			var block = this.blocks[0];
+		// test collisions for each block
+		for (var i = this.blocks.length - 1; i >= 0; i--) {
+			var block = this.blocks[i];
+
+			// if the ball intersects with the block
 			if (this.ball.collider.intersects(block.collider)) {
-				block.color = [0, 1, 1];
+				this.dirFlip = !this.dirFlip; // flip ball direction
+				block.color = [0, 1, 1]; // debug: change block color for a sec
 			}
 			else {
-				block.color = [1, 0, 0];
+				block.color = [1, 0, 0]; // debug: reset ball color
 			}
 		}
-	}
+
+		// move ball based on the dirFlip boolean
+		if (this.dirFlip == true) {
+			this.ball.position[2] += 5 * timeSinceLastFrame;
+		}
+		else {
+			this.ball.position[2] -= 5 * timeSinceLastFrame;
+		}
+
+	};
 }
 
 
