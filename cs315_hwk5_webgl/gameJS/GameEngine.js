@@ -19,10 +19,10 @@ function GameEngine(canvasNode) {
 
 	//transform/projections
 	this.mModelMatrix = mat4.create();
-	this.mViewMatrix = mat4.create();
-	this.mProjectionMatrix = mat4.create();
 	this.mMVMatrix = mat4.create();
 	this.mMVPMatrix = mat4.create();
+	// mProjectionMatrix and mViewMatrix is managed by the camera now, get it
+	// with this.camera.getProjectionMatrix() and this.camera.getViewMatrix()
 
 	//attribute handles
 	this.mMVPMatrixHandle = null;
@@ -46,7 +46,6 @@ function GameEngine(canvasNode) {
 
 	// all loaded meshes
 	this.mMeshes = {};
-
 
 	/*
 	 * Main GameEngine setup
@@ -76,18 +75,7 @@ function GameEngine(canvasNode) {
 
 		// set up camera
 		this.camera = new Camera(this);
-
-		// SET UP VIEW MATRIX
-		var eye = vec3.fromValues(0.0, 10.0, 3.0);
-		var look = vec3.fromValues(0.0, 0.0, 0.0);
-		var up = vec3.fromValues(0.0, 1.0, 0.0);
-		mat4.lookAt(this.mViewMatrix, eye, look, up);
-
-		// SET UP PROJECTION MATRIX
-		var ratio = this.canvas.clientWidth / this.canvas.clientHeight;
-		var near = 1.0;
-		var far = 20.0;
-		mat4.perspective(this.mProjectionMatrix, 45.0, ratio, near, far);
+		this.camera.recalculate(); // set up initial view and proj matrices
 
 		// Load model
 		this.log("loading models");
@@ -186,8 +174,8 @@ function GameEngine(canvasNode) {
 	 * draws a 1x1x1 cube with the current transformation
 	 */
 	this.drawMesh = function(mesh, color) {
-		mat4.mul(this.mMVMatrix, this.mViewMatrix, this.mModelMatrix);
-		mat4.mul(this.mMVPMatrix, this.mProjectionMatrix, this.mMVMatrix);
+		mat4.mul(this.mMVMatrix, this.camera.getViewMatrix(), this.mModelMatrix);
+		mat4.mul(this.mMVPMatrix, this.camera.getProjectionMatrix(), this.mMVMatrix);
 
 		// Pass in the combined matrix.
 		gl.uniformMatrix4fv(this.mMVMatrixHandle, false, this.mMVMatrix);
