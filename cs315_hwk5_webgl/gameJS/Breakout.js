@@ -21,14 +21,14 @@ function Breakout() {
 		input.addUpdateObject(this);
 
 		// create the ball
-		this.ball = new GameObject("ball", "ball");
+		this.ball = new GameObject("ball", "Ball");
 		this.ball.collider = new CircleCollider(this.ball);
 		this.ball.position = [0, 0, 0];
 		engine.addGameObject(this.ball);
 
 		// create a block
 		for (var i=0; i<2; i++) {
-			var block = new GameObject("block_" + i, "fancycube");
+			var block = new GameObject("block_" + i, "FancyCube");
 			block.collider = new RectangleCollider(block);
 			block.position = [0, 0, i];
 			engine.addGameObject(block);
@@ -38,12 +38,12 @@ function Breakout() {
 		this.blocks[1].position = [0, 0, 5];
 
 		// create the paddles
-		this.paddle1 = new GameObject("paddle1", "paddle");
+		this.paddle1 = new GameObject("paddle1", "Paddle");
 		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608);
 		this.paddle1.position = [11, 0, 0];
 		engine.addGameObject(this.paddle1);
 
-		this.paddle2 = new GameObject("paddle2", "paddle");
+		this.paddle2 = new GameObject("paddle2", "Paddle");
 		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608);
 		this.paddle2.position = [-11, 0, 0];
 		engine.addGameObject(this.paddle2);

@@ -3,7 +3,9 @@
 function GameObject(name, mesh, x, y) {
 	this.name = name;
 	this.mesh = mesh;
-	this.position = [x, y, 0];
+	var xp = x || 0;
+	var yp = y || 0;
+	this.position = [xp, yp, 0];
 	this.rotation = [0, 0, 0]; // degrees
 	this.scale = [1, 1, 1];
 	this.color = [1, 0, 0];
@@ -25,5 +27,3 @@ function GameObject(name, mesh, x, y) {
 			"], scale=[" + this.scale + "]>";
 	}
 }
-
-

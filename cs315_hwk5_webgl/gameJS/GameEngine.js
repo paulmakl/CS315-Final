@@ -77,29 +77,35 @@ function GameEngine(canvasNode) {
 		this.camera = new Camera(this);
 		this.camera.recalculate(); // set up initial view and proj matrices
 
-		// Load model
-		this.log("loading models");
-
-		var meshes = {
-			'fancycube': new obj_loader.Mesh(DATA['FancyCube.obj']),
-			'ball': new obj_loader.Mesh(DATA['Ball.obj']),
-			'paddle': new obj_loader.Mesh(DATA['Paddle.obj']),
-		};
-
-		this.initMeshes(meshes);
-
-		this.log("end of init");
+		// Load models
+		this.initMeshes();
 	}
 
 
 	/*
 	 * Set up meshes
 	 */
-	this.initMeshes = function(meshes) {
-		this.mMeshes = meshes;
-		obj_utils.initMeshBuffers(gl, this.mMeshes.fancycube);
-		obj_utils.initMeshBuffers(gl, this.mMeshes.ball);
-		obj_utils.initMeshBuffers(gl, this.mMeshes.paddle);
+	this.initMeshes = function() {
+		this.mMeshes = {};
+
+		// go through all data files
+		var allDataFiles = DATA.getFileList();
+		for (var i = allDataFiles.length - 1; i >= 0; i--) {
+			// if the data file has an obj extension
+			if (endsWith(allDataFiles[i], ".obj")) {
+				// cut off the file extension for the dict key
+				var modelName = allDataFiles[i].slice(0, -4);
+				// use the obj_loader on the data and store it in this.mMeshes
+				this.mMeshes[modelName] = new obj_loader.Mesh(DATA[allDataFiles[i]]);
+			}
+		};
+
+		// init all the mesh buffers
+		for (var key in this.mMeshes) {
+			if (this.mMeshes.hasOwnProperty(key)) {
+				obj_utils.initMeshBuffers(gl, this.mMeshes[key]);
+			}
+		}
 	}
 
 
@@ -261,5 +267,14 @@ function GameEngineSetup(canvas) {
 	engine = new GameEngine(canvas);
 	engine.init();      // initialize everything
 	engine.drawFrame(); // start drawing!
+}
+
+
+
+/*
+ * Helper function to test if a string ends with a specific substring
+ */
+function endsWith(str, suffix) {
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
