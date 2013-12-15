@@ -101,6 +101,10 @@ function Breakout() {
 			this.ball.position[2] -= 5 * timeSinceLastFrame;
 		}
 
+		// put the light right above the ball
+		engine.light.position[0] = this.ball.position[0];
+		engine.light.position[1] = this.ball.position[1] + 10.0;
+		engine.light.position[2] = this.ball.position[2];
 	};
 }
 
