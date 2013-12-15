@@ -13,7 +13,7 @@ function Breakout() {
 	// Timers:
 	this.rotTimer = 0;
 	this.moveTimer = 0;
-	this.dirFlip = true;
+	this.dirFlipX = true;
 
 
 	this.init = function() {
@@ -80,11 +80,9 @@ function Breakout() {
 		// test collisions for each block
 		for (var i = this.blocks.length - 1; i >= 0; i--) {
 			var block = this.blocks[i];
-			var p1 = this.paddle1;
-			var p2 = this.paddle2;
 
 			// if the ball intersects with the block
-			if(this.ball.collider.intersects(block.collider)){//if (this.ball.collider.intersects(p1.collider) || this.ball.collider.intersects(p2.collider) ) {
+			if (this.ball.collider.intersects(block.collider) ) {
 				this.dirFlip = !this.dirFlip; // flip ball direction
 				block.color = [0, 1, 1]; // debug: change block color for a sec
 			}
@@ -92,14 +90,26 @@ function Breakout() {
 				block.color = [1, 0, 0]; // debug: reset ball color
 			}
 		}
-
-		// move ball based on the dirFlip boolean
-		if (this.dirFlip == true) {
-			this.ball.position[2] += 5 * timeSinceLastFrame;
+		
+		if (this.ball.collider.intersects(this.paddle1.collider) || this.ball.collider.intersects(this.paddle2.collider) ) {
+			this.dirFlipX = !this.dirFlipX; // flip ball direction
 		}
 		else {
-			this.ball.position[2] -= 5 * timeSinceLastFrame;
 		}
+
+		// move ball based on the dirFlip boolean
+		if (this.dirFlipX == true) {
+			this.ball.position[0] += 5 * timeSinceLastFrame;
+		}
+		else {
+			this.ball.position[0] -= 5 * timeSinceLastFrame;
+		}
+		if(this.dirFlipY == true){
+			this.ball.position[0] += this.ySpeed * timeSinceLastFrame;
+		}else{
+			this.ball.position[0] -= this.ySpeed * timeSinceLastFrame;
+		}
+
 
 	};
 }
