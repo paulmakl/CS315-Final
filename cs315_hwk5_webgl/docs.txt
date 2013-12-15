@@ -1,3 +1,7 @@
+Matrix library docs:
+	http://glmatrix.net/docs/2.2.0/symbols/vec2.html
+
+
 Collider class requirements:
 	constructor:
 		GameObject obj -> The parent GameObject. Should set this.gameObject to this value.
@@ -9,4 +13,6 @@ Collider class requirements:
 	methods:
 		intersects(Collider col) ->
 			Returns true if this shape intersects with the other shape, otherwise false
+
+
 
