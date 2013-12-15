@@ -39,12 +39,12 @@ function Breakout() {
 
 		// create the paddles
 		this.paddle1 = new GameObject("paddle1", "fancycube");
-		this.paddle1.position = [6, 0, 0];
+		this.paddle1.position = [11, 0, 0];
 		this.paddle1.scale = [0.5, 0.5, 5];
 		engine.addGameObject(this.paddle1);
 
 		this.paddle2 = new GameObject("paddle2", "fancycube");
-		this.paddle2.position = [-6, 0, 0];
+		this.paddle2.position = [-11, 0, 0];
 		this.paddle2.scale = [0.5, 0.5, 5];
 		engine.addGameObject(this.paddle2);
 
@@ -80,9 +80,11 @@ function Breakout() {
 		// test collisions for each block
 		for (var i = this.blocks.length - 1; i >= 0; i--) {
 			var block = this.blocks[i];
+			var p1 = this.paddle1;
+			var p2 = this.paddle2;
 
 			// if the ball intersects with the block
-			if (this.ball.collider.intersects(block.collider)) {
+			if (this.ball.collider.intersects(p1.collider) || this.ball.collider.intersects(p2.collider) ) {
 				this.dirFlip = !this.dirFlip; // flip ball direction
 				block.color = [0, 1, 1]; // debug: change block color for a sec
 			}
@@ -93,10 +95,10 @@ function Breakout() {
 
 		// move ball based on the dirFlip boolean
 		if (this.dirFlip == true) {
-			this.ball.position[2] += 5 * timeSinceLastFrame;
+			this.ball.position[0] += 5 * timeSinceLastFrame;
 		}
 		else {
-			this.ball.position[2] -= 5 * timeSinceLastFrame;
+			this.ball.position[0] -= 5 * timeSinceLastFrame;
 		}
 
 	};
