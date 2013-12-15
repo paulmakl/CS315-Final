@@ -38,14 +38,12 @@ function Breakout() {
 		this.blocks[1].position = [0, 0, 5];
 
 		// create the paddles
-		this.paddle1 = new GameObject("paddle1", "fancycube");
+		this.paddle1 = new GameObject("paddle1", "paddle");
 		this.paddle1.position = [11, 0, 0];
-		this.paddle1.scale = [0.5, 0.5, 5];
 		engine.addGameObject(this.paddle1);
 
-		this.paddle2 = new GameObject("paddle2", "fancycube");
+		this.paddle2 = new GameObject("paddle2", "paddle");
 		this.paddle2.position = [-11, 0, 0];
-		this.paddle2.scale = [0.5, 0.5, 5];
 		engine.addGameObject(this.paddle2);
 
 		// tell the engine we want update() to get called every frame

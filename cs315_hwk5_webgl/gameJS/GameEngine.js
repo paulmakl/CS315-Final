@@ -38,6 +38,9 @@ function GameEngine(canvasNode) {
 	// objects that need to get their update() methods called every frame
 	this.updateObjects = [];
 
+	// camera object
+	this.camera = null;
+
 	// all GameObjects in the scene
 	this.gameObjects = [];
 
@@ -71,6 +74,9 @@ function GameEngine(canvasNode) {
 		// viewport setup
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
+		// set up camera
+		this.camera = new Camera(this);
+
 		// SET UP VIEW MATRIX
 		var eye = vec3.fromValues(0.0, 10.0, 3.0);
 		var look = vec3.fromValues(0.0, 0.0, 0.0);
@@ -89,6 +95,7 @@ function GameEngine(canvasNode) {
 		var meshes = {
 			'fancycube': new obj_loader.Mesh(DATA['FancyCube.obj']),
 			'ball': new obj_loader.Mesh(DATA['Ball.obj']),
+			'paddle': new obj_loader.Mesh(DATA['Paddle.obj']),
 		};
 
 		this.initMeshes(meshes);
@@ -104,6 +111,7 @@ function GameEngine(canvasNode) {
 		this.mMeshes = meshes;
 		obj_utils.initMeshBuffers(gl, this.mMeshes.fancycube);
 		obj_utils.initMeshBuffers(gl, this.mMeshes.ball);
+		obj_utils.initMeshBuffers(gl, this.mMeshes.paddle);
 	}
 
 

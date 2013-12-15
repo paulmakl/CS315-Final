@@ -34,7 +34,7 @@ function InputHandler() {
 	 */
 	this.keyIsDown = function(key) {
 		return self.keys.hasOwnProperty(key);
-	}
+	};
 
 
 	this._keyEvent = function(evt) {
