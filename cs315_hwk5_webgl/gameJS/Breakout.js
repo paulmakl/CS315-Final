@@ -40,6 +40,7 @@ function Breakout() {
 		this.paddle1 = new GameObject("paddle1", "Paddle");
 		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608);
 		this.paddle1.position = [11, 0, 0];
+		this.paddle1.rotation = [0, 180, 0];
 		engine.addGameObject(this.paddle1);
 
 		this.paddle2 = new GameObject("paddle2", "Paddle");
@@ -113,6 +114,10 @@ function Breakout() {
 		}*/
 
 
+		// put the light right above the ball
+		engine.light.position[0] = this.ball.position[0];
+		engine.light.position[1] = this.ball.position[1] + 10.0;
+		engine.light.position[2] = this.ball.position[2];
 	};
 }
 

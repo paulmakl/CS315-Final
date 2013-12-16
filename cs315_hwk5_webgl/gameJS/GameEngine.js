@@ -27,6 +27,7 @@ function GameEngine(canvasNode) {
 	//attribute handles
 	this.mMVPMatrixHandle = null;
 	this.mMVMatrixHandle = null;
+	this.mLightPosHandle = null;
 	this.mPositionHandle = null;
 	this.mColorHandle = null;
 	this.mNormalHandle = null;
@@ -37,6 +38,9 @@ function GameEngine(canvasNode) {
 
 	// objects that need to get their update() methods called every frame
 	this.updateObjects = [];
+
+	// lights
+	this.light = null;
 
 	// camera object
 	this.camera = null;
@@ -76,6 +80,10 @@ function GameEngine(canvasNode) {
 		// set up camera
 		this.camera = new Camera(this);
 		this.camera.recalculate(); // set up initial view and proj matrices
+
+		// default light
+		this.light = new Light();
+		this.light.position = [0, 0, 3];
 
 		// Load models
 		this.initMeshes();
@@ -126,6 +134,15 @@ function GameEngine(canvasNode) {
 
 
 	/*
+	 * Add a Light to the scene
+	 */
+	this.addLight = function(light) {
+		//this.lights.push(light);
+		this.light = light;
+	}
+
+
+	/*
 	 * Draws one frame
 	 */
 	this.drawFrame = function() {
@@ -139,6 +156,7 @@ function GameEngine(canvasNode) {
 		// grab handles
 		this.mMVPMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uMVPMatrix");
 		this.mMVMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uMVMatrix");
+		this.mLightPosHandle = gl.getUniformLocation(this.shaderProgramHandle, "uLightPos");
 		this.mPositionHandle = gl.getAttribLocation(this.shaderProgramHandle, "aPosition");
 		this.mColorHandle = gl.getAttribLocation(this.shaderProgramHandle, "aColor");
 		this.mNormalHandle = gl.getAttribLocation(this.shaderProgramHandle, "aNormal");
@@ -186,6 +204,9 @@ function GameEngine(canvasNode) {
 		// Pass in the combined matrix.
 		gl.uniformMatrix4fv(this.mMVMatrixHandle, false, this.mMVMatrix);
 		gl.uniformMatrix4fv(this.mMVPMatrixHandle, false, this.mMVPMatrix);
+
+		// Pass in light positions
+		gl.uniform3f(this.mLightPosHandle, this.light.position[0], this.light.position[1], this.light.position[2]);
 
 		// pass in the positions
 		gl.enableVertexAttribArray(this.mPositionHandle);
