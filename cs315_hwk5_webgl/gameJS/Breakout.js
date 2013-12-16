@@ -21,9 +21,8 @@ function Breakout() {
 		input.addUpdateObject(this);
 
 		// create the ball
-		this.ball = new GameObject("ball", "Ball");
+		this.ball = new Ball("ball", "Ball", 5, 0, 10, 0);
 		this.ball.collider = new CircleCollider(this.ball);
-		this.ball.position = [0, 0, 0];
 		engine.addGameObject(this.ball);
 
 		// create a block
@@ -92,23 +91,26 @@ function Breakout() {
 		}
 		
 		if (this.ball.collider.intersects(this.paddle1.collider) || this.ball.collider.intersects(this.paddle2.collider) ) {
-			this.dirFlipX = !this.dirFlipX; // flip ball direction
+			//this.dirFlipX = !this.dirFlipX; // flip ball direction
+			this.ball.xSpeed = this.ball.xSpeed * -1;
 		}
 		else {
 		}
+		
+		this.ball.position[0] += this.ball.xSpeed * timeSinceLastFrame;
 
 		// move ball based on the dirFlip boolean
-		if (this.dirFlipX == true) {
+		/*if (this.dirFlipX == true) {
 			this.ball.position[0] += 5 * timeSinceLastFrame;
 		}
 		else {
 			this.ball.position[0] -= 5 * timeSinceLastFrame;
-		}
-		if(this.dirFlipY == true){
+		}*/
+		/*if(this.dirFlipY == true){
 			this.ball.position[0] += this.ySpeed * timeSinceLastFrame;
 		}else{
 			this.ball.position[0] -= this.ySpeed * timeSinceLastFrame;
-		}
+		}*/
 
 
 	};
