@@ -16,9 +16,9 @@ function Breakout() {
 	this.rotTimer = 0;
 	this.moveTimer = 0;
 	this.dirFlipX = true;
-	this.Start1 = [-5, 0, -10, 0];
-	this.Start2 = [5, 0, 10, 0];
-	this.starts = [this.Start1, this.Start2]
+	this.startPos1 = [-5, 0, -5, -2];
+	this.startPos2 = [5, 0, 5, 2];
+	this.starts = [this.startPos1, this.startPos2]
 
 
 	this.init = function() {
@@ -26,13 +26,9 @@ function Breakout() {
 		input.addUpdateObject(this);
 
 		// create the ball
-		//this.ball = new Ball("ball", "Ball", -5, 0, 10, 0);
-		//this.ball.collider = new CircleCollider(this.ball);
-		//engine.addGameObject(this.ball);
-		//breakout.balls.push(this.ball)
 		for (var i=0; i<2; i++) {
 			var ball = new Ball("ball" + i, "Ball", 
-					this.starts[i][0], this.starts[i][1], this.starts[i][2], this.starts[i][3]);
+				this.starts[i][0], this.starts[i][1], this.starts[i][2], this.starts[i][3]);
 			ball.collider = new CircleCollider(ball);
 			engine.addGameObject(ball);
 			this.balls.push(ball);
@@ -101,63 +97,39 @@ function Breakout() {
 			// check collisions for each ball
 			for (var j = this.blocks.length - 1; j >= 0; j--) {
 				var block = this.blocks[j];
-
+				var intersection = ball.collider.intersects(block.collider);
 				// if the ball intersects with the block
-				if (ball.collider.intersects(block.collider) ) {
-					this.dirFlip = !this.dirFlip; // flip ball direction
+				if (intersection) {
 					block.color = [0, 1, 1]; // debug: change block color for a sec
 				}
 				else {
 					block.color = [1, 0, 0]; // debug: reset ball color
 				}
 			}
-			if (ball.collider.intersects(this.paddle1.collider) ||
-				       	ball.collider.intersects(this.paddle2.collider) ) {
+			var intersection = ball.collider.intersects(this.paddle1.collider) || ball.collider.intersects(this.paddle2.collider)
+			if (intersection){	
 				//this.dirFlipX = !this.dirFlipX; // flip ball direction
 				ball.xSpeed = ball.xSpeed * -1;
 			}
 			else {
 			}
 		}
-		// test collisions for each block
-		/*for (var i = this.blocks.length - 1; i >= 0; i--) {
-			var block = this.blocks[i];
-
-			// if the ball intersects with the block
-			if (this.ball.collider.intersects(block.collider) ) {
-				this.dirFlip = !this.dirFlip; // flip ball direction
-				block.color = [0, 1, 1]; // debug: change block color for a sec
-			}
-			else {
-				block.color = [1, 0, 0]; // debug: reset ball color
-			}
-		}*/
-		
-		/*if (this.ball.collider.intersects(this.paddle1.collider) || this.ball.collider.intersects(this.paddle2.collider) ) {
-			//this.dirFlipX = !this.dirFlipX; // flip ball direction
-			this.ball.xSpeed = this.ball.xSpeed * -1;
-		}
-		else {
-		}*/
+		//update the position of all the balls	
 		for (var i = this.balls.length - 1; i >= 0; i--){
+			//update ball positions
 			this.balls[i].position[0] += this.balls[i].xSpeed * timeSinceLastFrame;
+			this.balls[i].position[2] += this.balls[i].ySpeed * timeSinceLastFrame;
+			//check top and bottom positions
+			var ymax = 5.5 
+			if(this.balls[i].position[2] > ymax){
+				this.balls[i].ySpeed = this.balls[i].ySpeed * -1;
+				this.balls[i].position[2] = ymax;
+			}else if(this.balls[i].position[2] < -ymax){
+				this.balls[i].ySpeed = this.balls[i].ySpeed * -1;
+				this.balls[i].position[2] = -ymax;
+			}
 		}
-		//this.ball.position[0] += this.ball.xSpeed * timeSinceLastFrame;
-
-		// move ball based on the dirFlip boolean
-		/*if (this.dirFlipX == true) {
-			this.ball.position[0] += 5 * timeSinceLastFrame;
-		}
-		else {
-			this.ball.position[0] -= 5 * timeSinceLastFrame;
-		}*/
-		/*if(this.dirFlipY == true){
-			this.ball.position[0] += this.ySpeed * timeSinceLastFrame;
-		}else{
-			this.ball.position[0] -= this.ySpeed * timeSinceLastFrame;
-		}*/
-
-
+		//check top and bootom boundries
 		// put the light right above the ball
 		engine.light.position[0] = 0;//this.ball.position[0];
 		engine.light.position[1] = 10;//this.ball.position[1] + 10.0;

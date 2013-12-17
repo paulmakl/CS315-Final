@@ -3,15 +3,18 @@
 */
 
 
-function RectangleCollider(obj) {
+function RectangleCollider(obj, width, height) {
     // the parent GameObject
     this.gameObject = obj;
-
     // shape type for checking how to intersect with this
     this.shape = "Rectangle";
 
     // rectangle properties [w, h]
-    this.rect = [1, 1];
+    if(width && height){
+    	this.rect = [width, height];
+    }else{
+	this.rect = [1, 1];
+    }
 
 
     // returns true if this collider intersects with the other collider, else false
