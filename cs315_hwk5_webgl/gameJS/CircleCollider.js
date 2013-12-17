@@ -27,7 +27,7 @@ function CircleCollider(obj, radius, paddle) {
         if (col.shape == "Rectangle") {
             var points = col.getPoints();
             var origin = [this.gameObject.position[0], this.gameObject.position[2]];
-	    // if hitting both sides at once
+	    // if hitting the top and bottom of the ball
 	    if( (lineIntersectsCircle(points[0], points[1], origin, this.radius) ||
 	         lineIntersectsCircle(points[2], points[3], origin, this.radius) )
 		&&
@@ -70,11 +70,13 @@ function CircleCollider(obj, radius, paddle) {
                 //lineIntersectsCircle(points[2], points[3], origin, this.radius) //||
                 //lineIntersectsCircle(points[3], points[0], origin, this.radius) 
             );
-        }
+        }// if circle intersection
         else if (col.shape == "Circle") {
 		var incomingBall = col.getPoints();
 		var thisBall = this.getPoints();
 		var intersects = circlesIntersect(thisBall, incomingBall);
+		// if the balls intersect, the they exchange x directions and speeds
+		//  This follows the basic laws of the conservation of momentum with equal masses
 		if(intersects){
 			col.gameObject.xSpeed = [this.gameObject.xSpeed, this.gameObject.xSpeed = col.gameObject.xSpeed][0];
 			col.gameObject.ySpeed = [this.gameObject.ySpeed, this.gameObject.ySpeed = col.gameObject.ySpeed][0];

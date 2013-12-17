@@ -43,7 +43,7 @@ function Breakout() {
 				this.starts[i][0], this.starts[i][1], // starting x and y coordinates
 			       	this.starts[i][2], this.starts[i][3], // starting xspeed and yspeed
 			       	this.starts[i][4], this.starts[i][5]); // starting xdirection and ydirection
-			ball.collider = new CircleCollider(ball, 0.4); // pass in ball object and radius
+			ball.collider = new CircleCollider(ball, 0.6); // pass in ball object and radius
 			engine.addGameObject(ball);
 			this.balls.push(ball);
 		}
