@@ -115,7 +115,6 @@ function Breakout() {
 
 
 	this.update = function(timeSinceLastFrame) {
-		//TODO: bounds check. range seems to be roughly 3 to -5 for now.
 		// check up/down keys for player 1
 		if (input.keyIsDown("M")) {
 			if(this.paddle1.position[2] < 5){
@@ -142,7 +141,7 @@ function Breakout() {
 		// test collisions for each ball
 		for (var i=0; i < this.balls.length; i++) {
 			var ball = this.balls[i];
-			// check collisions for each ball
+			// check collisions between this ball and each block
 			for (var j = this.blocks.length - 1; j >= 0; j--) {
 				var block = this.blocks[j];
 				var intersection = ball.collider.intersects(block.collider);
@@ -151,14 +150,12 @@ function Breakout() {
 					engine.removeGameObject(block);// remove the block from game objects list
 					this.removeBlock(block);// remove the block from the blocks list
 				}
-				else {
-				}
 			}
-			var intersection = ball.collider.intersects(this.paddle1.collider) || ball.collider.intersects(this.paddle2.collider)
-			if (intersection){	
-			}
-			else {
-			}
+			//This runs the intersection test between the two paddles and the current ball. 
+			// The changing reflection of the movement vectors between the two elements is
+			// already handled
+			var intersection = ball.collider.intersects(this.paddle1.collider) || 
+					   ball.collider.intersects(this.paddle2.collider)
 		}
 		//see if the two balls are colliding
 		this.balls[0].collider.intersects(this.balls[1].collider)
