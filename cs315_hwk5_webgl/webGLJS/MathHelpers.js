@@ -76,3 +76,23 @@ function lineIntersectsCircle(a, b, center, radius) {
 		return false;
 	}
 }
+/*
+ * This function takes in two lists that each represent a circel,
+ * the first two elements are the x and y coordinates of the centers respectively
+ * the last element is the radius.
+ * returns true if the two circles intersect.
+ */
+function circlesIntersect(circle1, circle2){
+	return (
+		( square(circle1[2] - circle1[2]) <=
+	       	square(circle1[0] - circle2[0]) + square(circle1[1] - circle2[1]) ) &&
+		( square(circle1[0] - circle2[0]) + square(circle1[1] - circle2[1]) <=
+		square(circle1[2] + circle2[2]))
+	       )
+}
+/*
+ * squares the input
+ */
+function square(a){
+	return a * a;
+}
