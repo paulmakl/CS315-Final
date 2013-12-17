@@ -28,8 +28,8 @@ function Breakout() {
 	this.dirFlipX = true;
 	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
 	//this.startPos2 = [7, 0, 5, 3, 1, 1];
-	this.startPos1 = [-5, 0, -5, 0, -1, -1];
-	this.startPos2 = [5, 0, 5, 0, -1, -1];
+	this.startPos1 = [-7, 0, -5, 0, 1, -1];
+	this.startPos2 = [7, 0, 5, 0, 1, -1];
 	this.starts = [this.startPos1, this.startPos2]
 
 
