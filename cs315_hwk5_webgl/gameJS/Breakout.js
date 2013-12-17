@@ -20,6 +20,8 @@ function Breakout() {
 	this.dirFlipX = true;
 	this.startPos1 = [-7, 0, -5, -2];
 	this.startPos2 = [7, 0, 5, 2];
+	//this.startPos1 = [-5, 0, -5, 0];
+	//this.startPos2 = [5, 0, 5, 0];
 	this.starts = [this.startPos1, this.startPos2]
 
 
@@ -31,12 +33,13 @@ function Breakout() {
 		for (var i=0; i<2; i++) {
 			var ball = new Ball("ball" + i, "Ball", 
 				this.starts[i][0], this.starts[i][1], this.starts[i][2], this.starts[i][3]);
-			ball.collider = new CircleCollider(ball);
+			ball.collider = new CircleCollider(ball, 0.4);
 			engine.addGameObject(ball);
 			this.balls.push(ball);
 		}
+		this.balls[0].color = [1,1,0]
 
-		// create brick patter in the middle of the arena
+		// create brick pattern in the middle of the arena
 		for(var i = 5; i >= 0; i--){
 			for(var j = i; j >= -i; j--){
 				this.blockStartingPositions.push([i-5, 0, j]);
@@ -45,17 +48,17 @@ function Breakout() {
 				}
 			}
 		}
-		// create a block for each entry in blockStartingPositions
+		// put each ball in gameobjects
+		// 
 		for (var i=0; i<this.blockStartingPositions.length; i++) {
-			var block = new GameObject("block_" + i, "FancyCube");
-			block.collider = new RectangleCollider(block, 0.6552, 0.6552);
-			block.position = [this.blockStartingPositions[i][0],
-			       		this.blockStartingPositions[i][1],
-				       	this.blockStartingPositions[i][2]];
-			engine.addGameObject(block);
-			this.blocks.push(block);
-		}
-
+                        var block = new GameObject("block_" + i, "FancyCube");
+                        block.collider = new RectangleCollider(block, 0.6552, 0.6552);
+                        block.position = [this.blockStartingPositions[i][0],
+                                               this.blockStartingPositions[i][1],
+                                               this.blockStartingPositions[i][2]];
+                        engine.addGameObject(block);
+                        this.blocks.push(block);
+                }
 		// create the paddles
 		this.paddle1 = new GameObject("paddle1", "Paddle");
 		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608);
@@ -77,6 +80,22 @@ function Breakout() {
 		//console.log(key);
 		//console.log(evt);
 	};
+	/*
+	 * removes a block from the blocks list
+	 */
+	this.removeBlock = function(block){
+		if(block){
+			var index = this.blocks.indexOf(block);
+			this.blocks.splice(index, 1); 
+		}
+	}
+
+	/*
+	 * add a block to the list of blocks
+	 */
+	this.addBlock = function(block){
+		this.blocks.push(block);
+	}
 
 	this.addBall = function(ball){
 		console.log(ball);
@@ -111,20 +130,21 @@ function Breakout() {
 				// if the ball intersects with the block
 				if (intersection) {
 					ball.xSpeed = ball.xSpeed * -1;
-					block.color = [0, 1, 1]; // debug: change block color for a sec
+					engine.removeGameObject(block);// remove the block from game objects list
+					this.removeBlock(block);// remove the block from the blocks list
 				}
 				else {
-					block.color = [1, 0, 0]; // debug: reset ball color
 				}
 			}
 			var intersection = ball.collider.intersects(this.paddle1.collider) || ball.collider.intersects(this.paddle2.collider)
 			if (intersection){	
-				//this.dirFlipX = !this.dirFlipX; // flip ball direction
 				ball.xSpeed = ball.xSpeed * -1;
 			}
 			else {
 			}
 		}
+		//see if the two balls are colliding
+		this.balls[0].collider.intersects(this.balls[1].collider)
 		//update the position of all the balls	
 		for (var i = this.balls.length - 1; i >= 0; i--){
 			//update ball positions

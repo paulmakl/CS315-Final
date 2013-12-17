@@ -3,7 +3,7 @@
 */
 
 
-function CircleCollider(obj) {
+function CircleCollider(obj, radius) {
     // the parent GameObject
     this.gameObject = obj;
 
@@ -11,7 +11,11 @@ function CircleCollider(obj) {
     this.shape = "Circle";
 
     // circle properties
-    this.radius = 1;
+    if (radius){
+	    this.radius = radius;
+    }else{
+	    this.radius = 1;
+    }
 
 
     // returns true if this collider intersects with the other collider, else false
@@ -28,11 +32,22 @@ function CircleCollider(obj) {
             );
         }
         else if (col.shape == "Circle") {
-
+		var incomingBall = col.getPoints();
+		var thisBall = this.getPoints();
+		var intersects = circlesIntersect(thisBall, incomingBall);
+		if(intersects){
+			col.gameObject.xSpeed = [this.gameObject.xSpeed, this.gameObject.xSpeed = col.gameObject.xSpeed][0];
+			col.gameObject.ySpeed = [this.gameObject.ySpeed, this.gameObject.ySpeed = col.gameObject.ySpeed][0];
+		}		 
+		return circlesIntersect(thisBall, incomingBall);
         }
     }
 
-
+    this.getPoints = function() {
+	    x = this.gameObject.position[0];
+	    y = this.gameObject.position[2];
+	    return [x, y, this.radius];
+    }
     this.toString = function() {
         return "<CircleCollider radius=[" + this.radius + "]>";
     }

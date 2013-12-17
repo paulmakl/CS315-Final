@@ -8,7 +8,8 @@ function RectangleCollider(obj, width, height) {
     this.gameObject = obj;
     // shape type for checking how to intersect with this
     this.shape = "Rectangle";
-
+    this.width = width;
+    this.height = height;
     // rectangle properties [w, h]
     if(width && height){
     	this.rect = [width, height];

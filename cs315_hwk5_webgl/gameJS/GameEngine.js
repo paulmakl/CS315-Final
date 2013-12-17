@@ -131,7 +131,15 @@ function GameEngine(canvasNode) {
 	this.addGameObject = function(obj) {
 		this.gameObjects.push(obj);
 	}
-
+	/*
+	 * Remove a GameObject from the scene
+	 */
+	this.removeGameObject = function(obj) {
+		if(obj){
+			var index = this.gameObjects.indexOf(obj);
+			this.gameObjects.splice(index, 1);
+		}
+	}
 
 	/*
 	 * Add a Light to the scene

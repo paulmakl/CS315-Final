@@ -8,7 +8,7 @@ function Camera(gameEngine) {
     this.mProjectionMatrix = mat4.create();
 
     // camera config
-    this.position = [0.0, 10.0, 0.1];
+    this.position = [0, 15, 0.1];
     this.lookAt = [0.0, 0.0, 0.0];
     this.up = [0.0, 1.0, 0.0];
     this.near = 1.0;
