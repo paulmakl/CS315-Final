@@ -35,10 +35,10 @@ function RectangleCollider(obj, width, height) {
         var w = this.rect[0];
         var h = this.rect[1];
         return [
-            [ x - (w * 0.5), y + (h * 0.5) ],
-            [ x - (w * 0.5), y - (h * 0.5) ],
-            [ x + (w * 0.5), y - (h * 0.5) ],
-            [ x + (w * 0.5), y + (h * 0.5) ],
+            [ x - (w * 0.5), y + (h * 0.5) ], //top left
+            [ x - (w * 0.5), y - (h * 0.5) ], //bottom left
+            [ x + (w * 0.5), y - (h * 0.5) ], //bottom right
+            [ x + (w * 0.5), y + (h * 0.5) ], //top right
         ];
     }
 

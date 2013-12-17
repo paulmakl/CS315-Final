@@ -18,10 +18,10 @@ function Breakout() {
 	this.rotTimer = 0;
 	this.moveTimer = 0;
 	this.dirFlipX = true;
-	this.startPos1 = [-7, 0, -5, -2];
-	this.startPos2 = [7, 0, 5, 2];
-	//this.startPos1 = [-5, 0, -5, 0];
-	//this.startPos2 = [5, 0, 5, 0];
+	this.startPos1 = [-7, 0, 5, 3, -1, -1];
+	this.startPos2 = [7, 0, 5, 3, 1, 1];
+	//this.startPos1 = [-5, 0, -5, 0, -1, -1];
+	//this.startPos2 = [5, 0, 5, 0, -1, -1];
 	this.starts = [this.startPos1, this.startPos2]
 
 
@@ -32,7 +32,9 @@ function Breakout() {
 		// create the ball
 		for (var i=0; i<2; i++) {
 			var ball = new Ball("ball" + i, "Ball", 
-				this.starts[i][0], this.starts[i][1], this.starts[i][2], this.starts[i][3]);
+				this.starts[i][0], this.starts[i][1],
+			       	this.starts[i][2], this.starts[i][3],
+			       	this.starts[i][4], this.starts[i][5]);
 			ball.collider = new CircleCollider(ball, 0.4);
 			engine.addGameObject(ball);
 			this.balls.push(ball);
@@ -129,7 +131,6 @@ function Breakout() {
 				var intersection = ball.collider.intersects(block.collider);
 				// if the ball intersects with the block
 				if (intersection) {
-					ball.xSpeed = ball.xSpeed * -1;
 					engine.removeGameObject(block);// remove the block from game objects list
 					this.removeBlock(block);// remove the block from the blocks list
 				}
@@ -138,7 +139,6 @@ function Breakout() {
 			}
 			var intersection = ball.collider.intersects(this.paddle1.collider) || ball.collider.intersects(this.paddle2.collider)
 			if (intersection){	
-				ball.xSpeed = ball.xSpeed * -1;
 			}
 			else {
 			}
@@ -148,15 +148,15 @@ function Breakout() {
 		//update the position of all the balls	
 		for (var i = this.balls.length - 1; i >= 0; i--){
 			//update ball positions
-			this.balls[i].position[0] += this.balls[i].xSpeed * timeSinceLastFrame;
-			this.balls[i].position[2] += this.balls[i].ySpeed * timeSinceLastFrame;
+			this.balls[i].position[0] += this.balls[i].xSpeed * this.balls[i].xdir * timeSinceLastFrame;
+			this.balls[i].position[2] += this.balls[i].ySpeed * this.balls[i].ydir * timeSinceLastFrame;
 			//check top and bottom positions
 			var ymax = 5.5 
 			if(this.balls[i].position[2] > ymax){
-				this.balls[i].ySpeed = this.balls[i].ySpeed * -1;
+				this.balls[i].ydir = this.balls[i].ydir * -1;
 				this.balls[i].position[2] = ymax;
 			}else if(this.balls[i].position[2] < -ymax){
-				this.balls[i].ySpeed = this.balls[i].ySpeed * -1;
+				this.balls[i].ydir = this.balls[i].ydir * -1;
 				this.balls[i].position[2] = -ymax;
 			}
 		}
