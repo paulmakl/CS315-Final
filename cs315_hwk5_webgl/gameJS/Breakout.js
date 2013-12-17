@@ -5,6 +5,14 @@ var breakout;
 
 function Breakout() {
 	// GameObjects:
+	//These are factors that control how the ball bounces
+	//off the paddles at different points on the paddle
+	this.extremeBounce = 9;
+	this.normalBounce = 5;
+	this.midBounce = 4;	
+	// constants that control the threshold where the bounce zones are
+	this.topfifths = 1.2;
+	this.midfifths = 0.5;
 	//this.ball = null;
 	var self = this;
 	this.paddle1 = null;
@@ -18,10 +26,10 @@ function Breakout() {
 	this.rotTimer = 0;
 	this.moveTimer = 0;
 	this.dirFlipX = true;
-	this.startPos1 = [-7, 0, 5, 3, -1, -1];
-	this.startPos2 = [7, 0, 5, 3, 1, 1];
-	//this.startPos1 = [-5, 0, -5, 0, -1, -1];
-	//this.startPos2 = [5, 0, 5, 0, -1, -1];
+	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
+	//this.startPos2 = [7, 0, 5, 3, 1, 1];
+	this.startPos1 = [-5, 0, -5, 0, -1, -1];
+	this.startPos2 = [5, 0, 5, 0, -1, -1];
 	this.starts = [this.startPos1, this.startPos2]
 
 
@@ -32,16 +40,17 @@ function Breakout() {
 		// create the ball
 		for (var i=0; i<2; i++) {
 			var ball = new Ball("ball" + i, "Ball", 
-				this.starts[i][0], this.starts[i][1],
-			       	this.starts[i][2], this.starts[i][3],
-			       	this.starts[i][4], this.starts[i][5]);
-			ball.collider = new CircleCollider(ball, 0.4);
+				this.starts[i][0], this.starts[i][1], // starting x and y coordinates
+			       	this.starts[i][2], this.starts[i][3], // starting xspeed and yspeed
+			       	this.starts[i][4], this.starts[i][5]); // starting xdirection and ydirection
+			ball.collider = new CircleCollider(ball, 0.4); // pass in ball object and radius
 			engine.addGameObject(ball);
 			this.balls.push(ball);
 		}
 		this.balls[0].color = [1,1,0]
 
 		// create brick pattern in the middle of the arena
+		// add this to a list of starting positions for bricks
 		for(var i = 5; i >= 0; i--){
 			for(var j = i; j >= -i; j--){
 				this.blockStartingPositions.push([i-5, 0, j]);
@@ -63,13 +72,13 @@ function Breakout() {
                 }
 		// create the paddles
 		this.paddle1 = new GameObject("paddle1", "Paddle");
-		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608);
+		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608, true);// last argument states that it is a paddle
 		this.paddle1.position = [11, 0, 0];
 		this.paddle1.rotation = [0, 180, 0];
 		engine.addGameObject(this.paddle1);
 
 		this.paddle2 = new GameObject("paddle2", "Paddle");
-		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608);
+		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608, true);
 		this.paddle2.position = [-11, 0, 0];
 		engine.addGameObject(this.paddle2);
 
@@ -109,18 +118,26 @@ function Breakout() {
 		//TODO: bounds check. range seems to be roughly 3 to -5 for now.
 		// check up/down keys for player 1
 		if (input.keyIsDown("M")) {
-			this.paddle1.position[2] += 6.5 * timeSinceLastFrame;
+			if(this.paddle1.position[2] < 5){
+				this.paddle1.position[2] += 6.5 * timeSinceLastFrame;
+			}
 		}
 		else if (input.keyIsDown("K")) {
-			this.paddle1.position[2] -= 6.5 * timeSinceLastFrame;
+			if(this.paddle1.position[2] > -5){
+				this.paddle1.position[2] -= 6.5 * timeSinceLastFrame;
+			}
 		}
 
 		// check up/down keys for player 2
 		if (input.keyIsDown("Z")) {
-			this.paddle2.position[2] += 6.5 * timeSinceLastFrame;
+			if(this.paddle2.position[2] < 5){
+				this.paddle2.position[2] += 6.5 * timeSinceLastFrame;
+			}
 		}
 		else if (input.keyIsDown("A")) {
-			this.paddle2.position[2] -= 6.5 * timeSinceLastFrame;
+			if(this.paddle2.position[2] > -5){
+				this.paddle2.position[2] -= 6.5 * timeSinceLastFrame;
+			}
 		}
 		// test collisions for each ball
 		for (var i=0; i < this.balls.length; i++) {

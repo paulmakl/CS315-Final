@@ -42,7 +42,17 @@ function CircleCollider(obj, radius, paddle) {
 	    //if side intersection
 	    if(  lineIntersectsCircle(points[0], points[1], origin, this.radius) ||
 	         lineIntersectsCircle(points[2], points[3], origin, this.radius) ){
-			this.gameObject.xdir = this.gameObject.xdir * -1;
+		this.gameObject.xdir = this.gameObject.xdir * -1;
+		if(!paddle){
+			if (col.gameObject.position[2] > this.gameObject.position[2] + breakout.topfifths ||
+			    col.gameObject.position[2] < this.gameObject.position[2] - breakout.topfifths){
+				this.gameObject.ySpeed = breakout.extremeBounce;
+			}else if (col.gameObject.position[2] > this.gameObject.position[2] + breakout.midfifths ||
+			          col.gameObject.position[2] < this.gameObject.position[2] - breakout.midfifths){
+				this.gameObject.ySpeed = breakout.normalBounce;
+			}
+			
+		}
 		return true;
 	    }
 	    //if top/bot intersection
