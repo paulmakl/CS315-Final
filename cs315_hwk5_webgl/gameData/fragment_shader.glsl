@@ -1,16 +1,18 @@
 precision mediump float;  // don't need high precision
 
-const vec4 ambientColor = vec4(0.05, 0.05, 0.05, 1.0);
-const float shininess = 32.0;
-
 varying vec4 oPosition;
-varying vec4 oColor;
 varying vec3 oNormal;
 varying vec3 oLightPos;
+// material settings:
+varying vec4 oAmbient;
+varying vec4 oDiffuse;
+varying vec4 oSpecular;
+varying float oShininess;
+
 
 void main() {
 	// finalcolor starts with ambient
-	vec4 final = ambientColor;
+	vec4 final = oAmbient;
 
 	// prenormalize the normal
 	vec3 normal = normalize(oNormal);
@@ -24,7 +26,7 @@ void main() {
 	// =========
 	//  DIFFUSE
 	// =========
-	vec4 diffuse = oColor * ndotl;
+	vec4 diffuse = oDiffuse * ndotl;
 	final += diffuse;
 
 	// ==========
@@ -34,7 +36,7 @@ void main() {
 	float spec = max(0.0, dot(normal, vReflection));
 
 	if (ndotl > 0.0) {
-		float fSpec = pow(spec, 32.0);
+		float fSpec = pow(spec, oShininess);
 		final += fSpec;
 	}
 

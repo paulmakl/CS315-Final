@@ -8,8 +8,13 @@ function GameObject(name, mesh, x, y) {
 	this.position = [xp, yp, 0];
 	this.rotation = [0, 0, 0]; // degrees
 	this.scale = [1, 1, 1];
-	this.color = [1, 0, 0];
 	this.collider = null;
+
+	// material settings
+	this.ambient = [0.05, 0.05, 0.05];
+	this.diffuse = [1, 0, 0];
+	this.specular = [1, 0, 0];
+	this.shininess = 60;
 
 
 	// GameObjects can be added to the engine's updateObject list.
