@@ -35,7 +35,7 @@ function Breakout() {
 	this.dirFlipX = true;
 	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
 	//this.startPos2 = [7, 0, 5, 3, 1, 1];
-	this.startPos1 = [-7, 0, -5, 0, 1, -1];
+	this.startPos1 = [-7, 0, 5, 0, -1, -1];
 	this.startPos2 = [7, 0, 5, 0, 1, -1];
 	this.starts = [this.startPos1, this.startPos2]
 
@@ -79,7 +79,7 @@ function Breakout() {
 		// 
 		for (var i=0; i<this.blockStartingPositions.length; i++) {
                         var block = new GameObject("block_" + i, "FancyCube");
-                        block.collider = new RectangleCollider(block, 0.6552, 0.6552);
+                        block.collider = new RectangleCollider(block, 0.6552, 0.6552, false);
                         block.position = [this.blockStartingPositions[i][0],
                                                this.blockStartingPositions[i][1],
                                                this.blockStartingPositions[i][2]];
@@ -256,7 +256,7 @@ function Breakout() {
 			// check collisions between this ball and each block
 			for (var j = this.blocks.length - 1; j >= 0; j--) {
 				var block = this.blocks[j];
-				var intersection = ball.collider.intersects(block.collider);
+				var intersection = ball.collider.intersects(block.collider, timeSinceLastFrame);
 				// if the ball intersects with the block
 				if (intersection) {
 					engine.removeGameObject(block);// remove the block from game objects list
@@ -266,11 +266,11 @@ function Breakout() {
 			//This runs the intersection test between the two paddles and the current ball. 
 			// The changing reflection of the movement vectors between the two elements is
 			// already handled
-			var intersection = ball.collider.intersects(this.paddle1.collider) || 
-					   ball.collider.intersects(this.paddle2.collider)
+			var intersection = ball.collider.intersects(this.paddle1.collider, timeSinceLastFrame) || 
+					   ball.collider.intersects(this.paddle2.collider, timeSinceLastFrame)
 		}
 		//see if the two balls are colliding
-		this.balls[0].collider.intersects(this.balls[1].collider)
+		this.balls[0].collider.intersects(this.balls[1].collider, timeSinceLastFrame)
 		//update the position of all the balls	
 		for (var i = this.balls.length - 1; i >= 0; i--){
 			//update ball positions
@@ -288,13 +288,13 @@ function Breakout() {
 			}
 			// check if ball is outside of map
 			if(this.balls[i].position[0] > xmax){
-				this.updateScoreboard(this.paddle1Score, this.paddle2Score + 1);
-				this.balls[i].position = [-7,0,0,0];
-				this.paddle2Score += 1;
-			}else if(this.balls[i].position[0] < -xmax){
 				this.updateScoreboard(this.paddle1Score + 1, this.paddle2Score);
-				this.balls[i].position = [7,0,0];
+				this.balls[i].position = [-7,0,0,0];
 				this.paddle1Score += 1;
+			}else if(this.balls[i].position[0] < -xmax){
+				this.updateScoreboard(this.paddle1Score, this.paddle2Score + 1);
+				this.balls[i].position = [7,0,0];
+				this.paddle2Score += 1;
 			}
 		}
 		//check top and bootom boundries

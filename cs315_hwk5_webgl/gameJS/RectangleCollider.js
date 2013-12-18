@@ -4,7 +4,7 @@
 */
 
 
-function RectangleCollider(obj, width, height) {
+function RectangleCollider(obj, width, height, paddle) {
     // the parent GameObject
     this.gameObject = obj;
     // shape type for checking how to intersect with this
@@ -16,6 +16,11 @@ function RectangleCollider(obj, width, height) {
     	this.rect = [width, height];
     }else{
 	this.rect = [1, 1];
+    }
+    if(paddle){
+	    this.paddle = true;
+    }else{
+	    this.paddle = false;
     }
 
 
