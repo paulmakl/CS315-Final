@@ -30,7 +30,8 @@ function Breakout() {
 	this.balls = []; // hueh hueh hueh
 
 	// Timers:
-	this.rotTimer = 0;
+	this.zLightInc = 0.1;
+	this.xLightInc = 0.3;
 	this.moveTimer = 0;
 	this.dirFlipX = true;
 	this.paused = false;
@@ -306,8 +307,15 @@ function Breakout() {
 		}
 		//check top and bootom boundries
 		// put the light right above the ball
-		engine.light.position[0] = 0;//this.balls[0].position[0];
-		engine.light.position[1] = 10;//this.balls[0].position[1] + 10.0;
+		
+		if(engine.light.position[1] > 10 || engine.light.position[1] < 1){
+			this.zLightInc *= -1;	
+		}
+		if(engine.light.position[0] > 11 || engine.light.position[0] < -11){
+			this.xLightInc *= -1;	
+		}
+		engine.light.position[0] = engine.light.position[0] + this.xLightInc;//this.balls[0].position[0];
+		engine.light.position[1] = engine.light.position[1] + this.zLightInc;//(((new Date).getTime() * 1.1) % 10000.0) / 1000;//this.balls[0].position[1] + 10.0;
 		engine.light.position[2] = 0;//this.balls[0].position[2];
 	};
 }
