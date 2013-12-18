@@ -60,7 +60,7 @@ function Breakout() {
 				this.starts[i][0], this.starts[i][1], // starting x and y coordinates
 			       	this.starts[i][2], this.starts[i][3], // starting xspeed and yspeed
 			       	this.starts[i][4], this.starts[i][5]); // starting xdirection and ydirection
-			ball.collider = new CircleCollider(ball, 0.6); // pass in ball object and radius
+			ball.collider = new CircleCollider(ball, 0.2); // pass in ball object and radius
 			engine.addGameObject(ball);
 			this.balls.push(ball);
 		}
@@ -80,7 +80,7 @@ function Breakout() {
 		// 
 		for (var i=0; i<this.blockStartingPositions.length; i++) {
                         var block = new GameObject("block_" + i, "FancyCube");
-                        block.collider = new RectangleCollider(block, 0.6552, 0.6552, false);
+                        block.collider = new RectangleCollider(block, 1, 1, false);
                         block.position = [this.blockStartingPositions[i][0],
                                                this.blockStartingPositions[i][1],
                                                this.blockStartingPositions[i][2]];
