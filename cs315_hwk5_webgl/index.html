@@ -33,6 +33,9 @@
 
 <script>
 
+/*
+ * Game entry point and initialization
+ */
 $(document).ready(function() {
 	// check if GameData has been parsed and loaded correctly
 	if (typeof DATA != 'undefined') {
@@ -51,6 +54,29 @@ $(document).ready(function() {
 		addErrorMessage("Could not load GameData.js. Did you run data_compiler.py?");
 		$("#game").hide();
 	}
+
+
+	/*
+	 * Pause button on-click event handler
+	 */
+	$("#pause").click(function() {
+		breakout.paused = !breakout.paused; // toggle pause boolean
+
+		if (breakout.paused)
+			$(this).html("Continue");
+		else
+			$(this).html("Pause");
+	});
+
+
+	/*
+	 * Reset button on-click event handler
+	 */
+	$("#reset").click(function() {
+		engine.gameObjects = [];
+		engine.updateObjects = [];
+		BreakoutSetup();
+	});
 });
 
 </script>
@@ -64,16 +90,9 @@ $(document).ready(function() {
 	<canvas id="glcanvas" width="800" height="600">
 		If you see this, your browser doesn't support HTML5 canvas elements!
 	</canvas>
+	<button id="pause" class="gameControl">Pause</button>
+	<button id="reset" class="gameControl">Reset</button>
 	<p id="credits">by Paul Makl and Judd Cohen</p>
-	<button type="button" onclick="reset()">Reset Game</button>
-
-	<script>
-		function reset(){
-			engine.gameObjects = [];
-			engine.updateObjects = [];
-			BreakoutSetup();
-		}
-	</script>
 </div>
 
 </body>
