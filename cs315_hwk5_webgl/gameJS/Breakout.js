@@ -1,11 +1,18 @@
+"use strict";
 
 // game global:
 var breakout;
 
 
 function Breakout() {
+	var self = this; // hold on to a reference to the current instance in case 'this' gets overwritten
+
 	// GameObjects:
-	this.scoreboard = [];
+	this.paddle1Score = 0;
+	this.paddle2Score = 0;
+	this.scoreboard = []; // scoreboard digits
+	this.deco = []; // decoration models
+
 	//These are factors that control how the ball bounces
 	//off the paddles at different points on the paddle
 	this.extremeBounce = 9;
@@ -15,7 +22,6 @@ function Breakout() {
 	this.topfifths = 1.2;
 	this.midfifths = 0.5;
 	//this.ball = null;
-	var self = this;
 	this.paddle1 = null;
 	this.paddle2 = null;
 	//this.blockStartingPositions = [[0,0,5],[0,0,4],[0,0,3],[0,0,-5]];
@@ -39,7 +45,13 @@ function Breakout() {
 		input.addUpdateObject(this);
 
 		// set up the scoreboard
-		this.updateScoreboard(0, 0);
+		this.updateScoreboard(this.paddle2Score, this.paddle1Score);
+
+		// setup the main light
+		engine.light.position = [0, 10, 0];
+
+		// place decoration meshes
+		this.createDecoration("table", "PlayingField", [0, 0, 0], [0.1, 0.6, 0.1]);
 
 		// create the ball
 		for (var i=0; i<2; i++) {
@@ -92,6 +104,21 @@ function Breakout() {
 
 
 	/*
+	 * Helper method for creating decorative GameObjects (ones without collision)
+	 */
+	this.createDecoration = function(name, model, pos, color) {
+		var obj = new GameObject(name, model);
+		obj.position = vec3.clone(pos);
+		if (color != null) {
+			obj.color = color;
+		}
+		this.deco.push(obj);
+		engine.addGameObject(obj);
+		return obj;
+	};
+
+
+	/*
 	 * Update the scores with the specified values
 	 */
 	this.updateScoreboard = function(p1score, p2score) {
@@ -133,11 +160,11 @@ function Breakout() {
 		var p1digits = splitDigits(p1score);
 		for (var i = p1digits.length - 1; i >= 0; i--) {
 			var model = "Digit" + p1digits[i];
-			console.log("using model " + model);
 			var obj = new GameObject("scoreboard_digit", model);
 			obj.position = vec3.clone(p1pos);
 			obj.position[0] += i * 0.5;
 			obj.rotation = [0, 0, 0];
+			obj.color = [1, 1, 1];
 			this.scoreboard.push(obj);
 			engine.addGameObject(obj);
 		};
@@ -146,11 +173,11 @@ function Breakout() {
 		var p2digits = splitDigits(p2score);
 		for (var i = p2digits.length - 1; i >= 0; i--) {
 			var model = "Digit" + p2digits[i];
-			console.log("using model " + model);
 			var obj = new GameObject("scoreboard_digit", model);
 			obj.position = vec3.clone(p2pos);
 			obj.position[0] += i * 0.5;
 			obj.rotation = [0, 0, 0];
+			obj.color = [1, 1, 1];
 			this.scoreboard.push(obj);
 			engine.addGameObject(obj);
 		};
@@ -261,11 +288,13 @@ function Breakout() {
 			}
 			// check if ball is outside of map
 			if(this.balls[i].position[0] > xmax){
-				this.updateScoreboard(this.scoreboard[0] + 1, this.scoreboard[1]);
-				this.balls[i].position = this.balls[i].startingPosition;
+				this.updateScoreboard(this.paddle1Score, this.paddle2Score + 1);
+				this.balls[i].position = [-7,0,0,0];
+				this.paddle2Score += 1;
 			}else if(this.balls[i].position[0] < -xmax){
-				this.updateScoreboard(this.scoreboard[0], this.scoreboard[1] + 1);
-				this.balls[i].position = this.balls[i].startingPosition;
+				this.updateScoreboard(this.paddle1Score + 1, this.paddle2Score);
+				this.balls[i].position = [7,0,0];
+				this.paddle1Score += 1;
 			}
 		}
 		//check top and bootom boundries

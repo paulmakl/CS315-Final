@@ -1,3 +1,4 @@
+"use strict";
 
 // engine global
 var engine;
@@ -264,7 +265,7 @@ function GameEngine(canvasNode) {
 
 		// process attributes
 		if (attributes) {
-			for (i = 0; i < attributes.length; i++) {
+			for (var i = 0; i < attributes.length; i++) {
 				gl.bindAttribLocation(shaderProgramHandle, i, attributes[i]);
 			}
 		}

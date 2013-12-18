@@ -1,3 +1,5 @@
+"use strict";
+
 function Ball(name, mesh, x, y, xSpeed, ySpeed, xdir, ydir){
 	this.base = GameObject;
 	this.base(name, mesh, x, y);
