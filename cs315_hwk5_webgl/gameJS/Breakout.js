@@ -250,7 +250,8 @@ function Breakout() {
 			this.balls[i].position[0] += this.balls[i].xSpeed * this.balls[i].xdir * timeSinceLastFrame;
 			this.balls[i].position[2] += this.balls[i].ySpeed * this.balls[i].ydir * timeSinceLastFrame;
 			//check top and bottom positions
-			var ymax = 5.5 
+			var ymax = 5.5; 
+			var xmax = 13;
 			if(this.balls[i].position[2] > ymax){
 				this.balls[i].ydir = this.balls[i].ydir * -1;
 				this.balls[i].position[2] = ymax;
@@ -258,12 +259,20 @@ function Breakout() {
 				this.balls[i].ydir = this.balls[i].ydir * -1;
 				this.balls[i].position[2] = -ymax;
 			}
+			// check if ball is outside of map
+			if(this.balls[i].position[0] > xmax){
+				this.updateScoreboard(this.scoreboard[0] + 1, this.scoreboard[1]);
+				this.balls[i].position = this.balls[i].startingPosition;
+			}else if(this.balls[i].position[0] < -xmax){
+				this.updateScoreboard(this.scoreboard[0], this.scoreboard[1] + 1);
+				this.balls[i].position = this.balls[i].startingPosition;
+			}
 		}
 		//check top and bootom boundries
 		// put the light right above the ball
-		engine.light.position[0] = 0;//this.ball.position[0];
-		engine.light.position[1] = 10;//this.ball.position[1] + 10.0;
-		engine.light.position[2] = 0;//this.ball.position[2];
+		engine.light.position[0] = 0;//this.balls[0].position[0];
+		engine.light.position[1] = 10;//this.balls[0].position[1] + 10.0;
+		engine.light.position[2] = 0;//this.balls[0].position[2];
 	};
 }
 
