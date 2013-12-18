@@ -1,3 +1,4 @@
+"use strict";
 /*
     See docs.txt for the things required in a collider class.
 */
@@ -88,8 +89,8 @@ function CircleCollider(obj, radius, paddle) {
     }
 
     this.getPoints = function() {
-	    x = this.gameObject.position[0];
-	    y = this.gameObject.position[2];
+	    var x = this.gameObject.position[0];
+	    var y = this.gameObject.position[2];
 	    return [x, y, this.radius];
     }
     this.toString = function() {

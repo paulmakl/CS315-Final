@@ -1,3 +1,4 @@
+"use strict";
 /*
     See docs.txt for the things required in a collider class.
 */

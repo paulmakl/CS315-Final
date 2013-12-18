@@ -1,4 +1,4 @@
-
+"use strict";
 
 function GameObject(name, mesh, x, y) {
 	this.name = name;
