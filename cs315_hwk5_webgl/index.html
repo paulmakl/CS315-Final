@@ -66,6 +66,15 @@ $(document).ready(function() {
 		If you see this, your browser doesn't support HTML5 canvas elements!
 	</canvas>
 	<p id="credits">by Paul Makl and Judd Cohen</p>
+	<button type="button" onclick="reset()">Reset Game</button>
+
+	<script>
+		function reset(){
+			engine.gameObjects = [];
+			engine.updateObjects = [];
+			BreakoutSetup();
+		}
+	</script>
 </div>
 
 </body>
