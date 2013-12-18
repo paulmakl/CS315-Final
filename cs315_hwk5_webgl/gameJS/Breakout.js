@@ -44,6 +44,9 @@ function Breakout() {
 		// set up the scoreboard
 		this.updateScoreboard(0, 0);
 
+		// setup the main light
+		engine.light.position = [0, 10, 0];
+
 		// place decoration meshes
 		this.createDecoration("table", "PlayingField", [0, 0, 0], [0.1, 0.6, 0.1]);
 
@@ -281,10 +284,6 @@ function Breakout() {
 			}
 		}
 		//check top and bootom boundries
-		// put the light right above the ball
-		engine.light.position[0] = 0;//this.ball.position[0];
-		engine.light.position[1] = 10;//this.ball.position[1] + 10.0;
-		engine.light.position[2] = 0;//this.ball.position[2];
 	};
 }
 
