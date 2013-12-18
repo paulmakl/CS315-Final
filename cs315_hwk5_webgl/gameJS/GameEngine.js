@@ -5,7 +5,11 @@ var engine;
 
 
 function GameEngine(canvasNode) {
+	var self = this; // hang on to a reference to 'this' in case javascript steps on it
+
 	this.debug = true;
+
+	this.ratio = 680 / 1350; // screen aspect ratio (h / w)
 
 	this.mPositionDataSize = 3;
 	this.mNormalDataSize = 3;
@@ -36,6 +40,7 @@ function GameEngine(canvasNode) {
 	// timing variables
 	this.lastFrameTime = 0;
 	this.timeSinceLastFrame = 0;
+	this.resizeTimer = null;
 
 	// objects that need to get their update() methods called every frame
 	this.updateObjects = [];
@@ -75,8 +80,12 @@ function GameEngine(canvasNode) {
 		gl.enable(gl.CULL_FACE);
 		gl.enable(gl.DEPTH_TEST);
 
+		// use the aspect ratio to calculate the correct height
+		var height = this.canvas.width * this.ratio;
+		this.canvas.height = height;
+
 		// viewport setup
-		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+		gl.viewport(0, 0, this.canvas.width, height);
 
 		// set up camera
 		this.camera = new Camera(this);
@@ -88,7 +97,28 @@ function GameEngine(canvasNode) {
 
 		// Load models
 		this.initMeshes();
-	}
+
+		// set up a window-resize event callback to adjust the viewport if the window size changes
+		$(window).resize(function() {
+			clearTimeout(self.resizeTimer);
+			self.resizeTimer = setTimeout(function() {
+				var w = document.body.clientWidth;
+				var h = w * self.ratio; // recalculate to the height for the new width
+
+				// tell the canvas:
+				var canvas = $('#glcanvas')[0];
+				canvas.width = w;
+				canvas.height = h;
+
+				// tell the viewport:
+				gl.viewport(0, 0, w, h);
+
+				// tell the camera:
+				self.camera.recalculate(w, h);
+			}, 50);
+		});
+
+	};
 
 
 	/*

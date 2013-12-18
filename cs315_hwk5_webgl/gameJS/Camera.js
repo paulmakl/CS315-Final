@@ -18,12 +18,15 @@ function Camera(gameEngine) {
 
 
     // must call recalculate after making any changes to the camera config
-    this.recalculate = function() {
+    this.recalculate = function(width, height) {
+        if (width == null) width = this.gameEngine.canvas.clientWidth;
+        if (height == null) height = this.gameEngine.canvas.clientHeight;
+
         // view matrix:
         mat4.lookAt(this.mViewMatrix, this.position, this.lookAt, this.up);
 
         // projection matrix:
-        var ratio = this.gameEngine.canvas.clientWidth / this.gameEngine.canvas.clientHeight;
+        var ratio = width / height;
         mat4.perspective(this.mProjectionMatrix, this.fovy, ratio, this.near, this.far);
     };
 
