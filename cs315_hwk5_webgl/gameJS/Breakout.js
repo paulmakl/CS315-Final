@@ -5,6 +5,7 @@ var breakout;
 
 function Breakout() {
 	// GameObjects:
+	this.scoreboard = [];
 	//These are factors that control how the ball bounces
 	//off the paddles at different points on the paddle
 	this.extremeBounce = 9;
@@ -36,6 +37,9 @@ function Breakout() {
 	this.init = function() {
 		// tell the input system we want all input events (requires inputEvent(key,evt) method)
 		input.addUpdateObject(this);
+
+		// set up the scoreboard
+		this.updateScoreboard(0, 0);
 
 		// create the ball
 		for (var i=0; i<2; i++) {
@@ -84,6 +88,72 @@ function Breakout() {
 
 		// tell the engine we want update() to get called every frame
 		engine.addUpdateObject(this);
+	};
+
+
+	/*
+	 * Update the scores with the specified values
+	 */
+	this.updateScoreboard = function(p1score, p2score) {
+		var p1pos = [-5, 2, -5];
+		var p2pos = [5, 2, -5];
+
+		// clear the current scoreboard
+		for (var i = this.scoreboard.length - 1; i >= 0; i--) {
+			engine.removeGameObject(this.scoreboard[i]);
+		};
+		this.scoreboard = []; // clear array
+
+		// helper function to split an int into a array of digits
+		function splitDigits(num) {
+			// helper function to get one individual digit
+			function getDigit(n, i) { return Math.floor(n / Math.pow(10, i - 1)) % 10; }
+
+			var digits = [];
+
+			if (num <= 0) {
+				return [0];
+			}
+			else if (num < 10) {
+				digits.push(getDigit(num, 1));
+			}
+			else if (num < 100) {
+				digits.push(getDigit(num, 2));
+				digits.push(getDigit(num, 1));
+			}
+			else if (num >= 100) {
+				// max out at 99 i guess
+				digits.push(9);
+				digits.push(9);
+			}
+			return digits;
+		}
+
+		// ====== player 1 score ======
+		var p1digits = splitDigits(p1score);
+		for (var i = p1digits.length - 1; i >= 0; i--) {
+			var model = "Digit" + p1digits[i];
+			console.log("using model " + model);
+			var obj = new GameObject("scoreboard_digit", model);
+			obj.position = vec3.clone(p1pos);
+			obj.position[0] += i * 0.5;
+			obj.rotation = [0, 0, 0];
+			this.scoreboard.push(obj);
+			engine.addGameObject(obj);
+		};
+
+		// ====== player 2 score ======
+		var p2digits = splitDigits(p2score);
+		for (var i = p2digits.length - 1; i >= 0; i--) {
+			var model = "Digit" + p2digits[i];
+			console.log("using model " + model);
+			var obj = new GameObject("scoreboard_digit", model);
+			obj.position = vec3.clone(p2pos);
+			obj.position[0] += i * 0.5;
+			obj.rotation = [0, 0, 0];
+			this.scoreboard.push(obj);
+			engine.addGameObject(obj);
+		};
 	};
 
 
