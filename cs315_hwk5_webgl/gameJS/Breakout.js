@@ -115,6 +115,21 @@ function Breakout() {
 
 
 	this.update = function(timeSinceLastFrame) {
+		//camera controls
+		if (input.keyIsDown("T")) {
+			//if(engine.camera.position[2] < 10){
+				engine.camera.position[2] += 5 * timeSinceLastFrame;
+				engine.camera.position[1] -= 5 * timeSinceLastFrame;
+				engine.camera.recalculate();
+			//}
+		}
+		if (input.keyIsDown("G")) {
+			//if(engine.camera.position[2] > -10){
+				engine.camera.position[2] -= 5 * timeSinceLastFrame;
+				engine.camera.position[1] += 5 * timeSinceLastFrame;
+				engine.camera.recalculate();
+			//}
+		}
 		// check up/down keys for player 1
 		if (input.keyIsDown("M")) {
 			if(this.paddle1.position[2] < 5){
