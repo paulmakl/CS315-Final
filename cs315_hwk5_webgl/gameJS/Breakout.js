@@ -4,6 +4,40 @@
 var breakout;
 
 
+// http://colorschemedesigner.com/#3r31Tuup9w0wV
+var Color = {
+	p1: {
+		main: [0x0B, 0xC7, 0x7E, 0xFF],
+		desat: [0x1E, 0x4B, 0x5F, 0xFF],
+		dark: [0x04, 0x3A, 0x52, 0xFF],
+		light: [0x3E, 0x99, 0xC0, 0xFF],
+		light_desat: [0x62, 0xA4, 0xC0, 0xFF]
+	},
+	p2: {
+		main: [0xC8, 0x92, 0x0A, 0xFF],
+		desat: [0x96, 0x78, 0x2B, 0xFF],
+		dark: [0x82, 0x5E, 0x03, 0xFF],
+		light: [0xE4, 0xB7, 0x43, 0xFF],
+		light_desat: [0xE4, 0xC3, 0x70, 0xFF]
+	},
+	bg: {
+		main: [0xC8, 0x2E, 0x0A, 0xFF],
+		desat: [0x96, 0x3F, 0x2B, 0xFF],
+		dark: [0x82, 0x1B, 0x03, 0xFF],
+		light: [0xE4, 0x62, 0x43, 0xFF],
+		light_desat: [0xE4, 0x86, 0x70, 0xFF]
+	},
+	/* helper method to clone the color array and convert to the right values */
+	get: function(type, variation) {
+		// copy the array so we don't change anything
+		var col = vec4.clone(this[type][variation]);
+		// convert from 0..255 to 0..1
+		for (var i = col.length - 1; i >= 0; i--) col[i] = col[i] / 0xFF;
+		return col;
+	}
+};
+
+
 function Breakout() {
 	var self = this; // hold on to a reference to the current instance in case 'this' gets overwritten
 
@@ -12,6 +46,13 @@ function Breakout() {
 	this.paddle2Score = 0;
 	this.scoreboard = []; // scoreboard digits
 	this.deco = []; // decoration models
+	this.menuball = null;
+
+	this.ballRotationSpeed = 150;
+
+	// gameplay variables
+	this.paddleSpeed = 8.5;
+	this.ballSpeed = 1.0; // multiplier
 
 	//These are factors that control how the ball bounces
 	//off the paddles at different points on the paddle
@@ -33,7 +74,9 @@ function Breakout() {
 	this.zLightInc = 0.1;
 	this.xLightInc = 0.3;
 	this.moveTimer = 0;
+	this.ballRotationTimer = 0;
 	this.dirFlipX = true;
+	this.started = false;
 	this.paused = false;
 	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
 	//this.startPos2 = [7, 0, 5, 3, 1, 1];
@@ -49,11 +92,18 @@ function Breakout() {
 		// set up the scoreboard
 		this.updateScoreboard(this.paddle2Score, this.paddle1Score);
 
+		// initial camera setup
+		engine.camera.position[2] = 5.8;
+		engine.camera.lookAt[2] = -1.4;
+		engine.camera.recalculate();
+
 		// setup the main light
 		engine.light.position = [0, 10, 0];
 
 		// place decoration meshes
-		this.createDecoration("table", "PlayingField", [0, 0, 0], [0.1, 0.6, 0.1]);
+		this.createDecoration("table", "PlayingField", [0, 0, 0]);
+		this.menuball = this.createDecoration("menuball", "Ball", [0, 5.5, 0], Color.get("bg", "main"));
+		this.menuball.scale = [8, 8, 8];
 
 		// create the ball
 		for (var i=0; i<2; i++) {
@@ -65,7 +115,8 @@ function Breakout() {
 			engine.addGameObject(ball);
 			this.balls.push(ball);
 		}
-		this.balls[0].color = [1,1,0]
+		this.balls[0].diffuse = Color.get("p1", "main");
+		this.balls[1].diffuse = Color.get("p2", "main");
 
 		// create brick pattern in the middle of the arena
 		// add this to a list of starting positions for bricks
@@ -85,23 +136,37 @@ function Breakout() {
                         block.position = [this.blockStartingPositions[i][0],
                                                this.blockStartingPositions[i][1],
                                                this.blockStartingPositions[i][2]];
+                        block.diffuse = Color.get("bg", "light");
                         engine.addGameObject(block);
                         this.blocks.push(block);
                 }
 		// create the paddles
 		this.paddle1 = new GameObject("paddle1", "Paddle");
-		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608, true);// last argument states that it is a paddle
-		this.paddle1.position = [11, 0, 0];
-		this.paddle1.rotation = [0, 180, 0];
+		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608, true);
+		this.paddle1.position = [-11, 0, 0];
+		this.paddle1.diffuse = Color.get("p1", "dark");
 		engine.addGameObject(this.paddle1);
 
 		this.paddle2 = new GameObject("paddle2", "Paddle");
-		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608, true);
-		this.paddle2.position = [-11, 0, 0];
+		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608, true);// last argument states that it is a paddle
+		this.paddle2.position = [11, 0, 0];
+		this.paddle2.rotation = [0, 180, 0];
+		this.paddle2.diffuse = Color.get("p2", "dark");
 		engine.addGameObject(this.paddle2);
 
 		// tell the engine we want update() to get called every frame
 		engine.addUpdateObject(this);
+	};
+
+
+	/*
+	 * Stops displaying menu stuff and starts the game
+	 */
+	this.startGame = function() {
+		var i = this.deco.indexOf(this.menuball);
+		if (i > -1) this.deco.splice(i, 1);
+		engine.removeGameObject(this.menuball);
+		this.started = true;
 	};
 
 
@@ -111,8 +176,8 @@ function Breakout() {
 	this.createDecoration = function(name, model, pos, color) {
 		var obj = new GameObject(name, model);
 		obj.position = vec3.clone(pos);
-		if (color != null) {
-			obj.color = color;
+		if (color == null) {
+			obj.diffuse = Color.get("bg", "dark");
 		}
 		this.deco.push(obj);
 		engine.addGameObject(obj);
@@ -124,8 +189,8 @@ function Breakout() {
 	 * Update the scores with the specified values
 	 */
 	this.updateScoreboard = function(p1score, p2score) {
-		var p1pos = [-5, 2, -5];
-		var p2pos = [5, 2, -5];
+		var p1pos = [-5, 3, -6];
+		var p2pos = [5, 3, -6];
 
 		// clear the current scoreboard
 		for (var i = this.scoreboard.length - 1; i >= 0; i--) {
@@ -166,7 +231,9 @@ function Breakout() {
 			obj.position = vec3.clone(p1pos);
 			obj.position[0] += i * 0.5;
 			obj.rotation = [0, 0, 0];
-			obj.color = [1, 1, 1];
+			// very high ambient so scores are always easy to see
+			vec3.multiply(obj.ambient, Color.get("p1", "main"), [0.6, 0.6, 0.6]);
+			obj.diffuse = Color.get("p1", "light_desat");
 			this.scoreboard.push(obj);
 			engine.addGameObject(obj);
 		};
@@ -179,7 +246,10 @@ function Breakout() {
 			obj.position = vec3.clone(p2pos);
 			obj.position[0] += i * 0.5;
 			obj.rotation = [0, 0, 0];
-			obj.color = [1, 1, 1];
+			obj.ambient = [0.5, 0.5, 0.5];
+			// very high ambient so scores are always easy to see
+			vec3.multiply(obj.ambient, Color.get("p2", "main"), [0.6, 0.6, 0.6]);
+			obj.diffuse = Color.get("p2", "light_desat");
 			this.scoreboard.push(obj);
 			engine.addGameObject(obj);
 		};
@@ -214,49 +284,54 @@ function Breakout() {
 
 
 	this.update = function(timeSinceLastFrame) {
+		// increment ball rotation timer
+		this.ballRotationTimer += timeSinceLastFrame;
+		this.ballRotationTimer = this.ballRotationTimer % 360;
+
 		//camera controls
-		if (input.keyIsDown("T")) {
-			//if(engine.camera.position[2] < 10){
-				engine.camera.position[2] += 5 * timeSinceLastFrame;
-				engine.camera.lookAt[2] -= 5 * timeSinceLastFrame;
-				engine.camera.recalculate();
-			//}
-		}
 		if (input.keyIsDown("G")) {
-			//if(engine.camera.position[2] > -10){
-				engine.camera.position[2] -= 5 * timeSinceLastFrame;
-				engine.camera.lookAt[2] += 5 * timeSinceLastFrame;
+			if (engine.camera.position[2] < 25) {
+				engine.camera.position[2] += 6 * timeSinceLastFrame;
+				engine.camera.lookAt[2] -= 1.5 * timeSinceLastFrame;
 				engine.camera.recalculate();
-			//}
+			}
+		}
+		if (input.keyIsDown("T")) {
+			if (engine.camera.position[2] >= 0.25) {
+				engine.camera.position[2] -= 6 * timeSinceLastFrame;
+				engine.camera.lookAt[2] += 1.5 * timeSinceLastFrame;
+				engine.camera.recalculate();
+			}
 		}
 
-		if (this.paused) return;
+		if (!this.started) {
+			this.menuball.rotation[2] = -15 * this.ballRotationTimer;
+		}
+
+		if (this.paused || !this.started) return;
 		// ========================================================================
 		//  Everything past this point will NOT occur if the game is paused
 		// ========================================================================
 
+		var PADDLE_BOUNDS = 3.73;
+		
+		// helper wrapper around clamp with to keep the code more readable
+		function paddleClamp(pos) { return clamp(pos, -PADDLE_BOUNDS, PADDLE_BOUNDS); }
+
 		// check up/down keys for player 1
-		if (input.keyIsDown("M")) {
-			if(this.paddle1.position[2] < 5){
-				this.paddle1.position[2] += 6.5 * timeSinceLastFrame;
-			}
+		if (input.keyIsDown("Z")) {
+			this.paddle1.position[2] = paddleClamp(this.paddle1.position[2] + (this.paddleSpeed * timeSinceLastFrame));
 		}
-		else if (input.keyIsDown("K")) {
-			if(this.paddle1.position[2] > -5){
-				this.paddle1.position[2] -= 6.5 * timeSinceLastFrame;
-			}
+		else if (input.keyIsDown("A")) {
+			this.paddle1.position[2] = paddleClamp(this.paddle1.position[2] - (this.paddleSpeed * timeSinceLastFrame));
 		}
 
 		// check up/down keys for player 2
-		if (input.keyIsDown("Z")) {
-			if(this.paddle2.position[2] < 5){
-				this.paddle2.position[2] += 6.5 * timeSinceLastFrame;
-			}
+		if (input.keyIsDown("M")) {
+			this.paddle2.position[2] = paddleClamp(this.paddle2.position[2] + (this.paddleSpeed * timeSinceLastFrame));
 		}
-		else if (input.keyIsDown("A")) {
-			if(this.paddle2.position[2] > -5){
-				this.paddle2.position[2] -= 6.5 * timeSinceLastFrame;
-			}
+		else if (input.keyIsDown("K")) {
+			this.paddle2.position[2] = paddleClamp(this.paddle2.position[2] - (this.paddleSpeed * timeSinceLastFrame));
 		}
 		// test collisions for each ball
 		for (var i=0; i < this.balls.length; i++) {
@@ -281,9 +356,20 @@ function Breakout() {
 		this.balls[0].collider.intersects(this.balls[1].collider, timeSinceLastFrame)
 		//update the position of all the balls	
 		for (var i = this.balls.length - 1; i >= 0; i--){
+			// hang onto the previous position before moving the ball
+			var lastPos = vec3.clone(this.balls[i].position);
+
 			//update ball positions
 			this.balls[i].position[0] += this.balls[i].xSpeed * this.balls[i].xdir * timeSinceLastFrame;
 			this.balls[i].position[2] += this.balls[i].ySpeed * this.balls[i].ydir * timeSinceLastFrame;
+
+			// calculate the rotation of the ball (purely for visual fluff)
+			var ballDir = vec3.create();
+			vec3.subtract(ballDir, lastPos, this.balls[i].position);
+			vec3.normalize(ballDir, ballDir);
+			this.balls[i].rotation[0] = this.ballRotationTimer * this.ballRotationSpeed * ballDir[2];
+			this.balls[i].rotation[2] = this.ballRotationTimer * this.ballRotationSpeed * ballDir[0];
+
 			//check top and bottom positions
 			var ymax = 5.5; 
 			var xmax = 13;
@@ -305,6 +391,7 @@ function Breakout() {
 				this.paddle2Score += 1;
 			}
 		}
+
 		//check top and bootom boundries
 		// put the light right above the ball
 		
@@ -314,9 +401,9 @@ function Breakout() {
 		if(engine.light.position[0] > 11 || engine.light.position[0] < -11){
 			this.xLightInc *= -1;	
 		}
-		engine.light.position[0] = engine.light.position[0] + this.xLightInc;//this.balls[0].position[0];
-		engine.light.position[1] = engine.light.position[1] + this.zLightInc;//(((new Date).getTime() * 1.1) % 10000.0) / 1000;//this.balls[0].position[1] + 10.0;
-		engine.light.position[2] = 0;//this.balls[0].position[2];
+		//engine.light.position[0] = engine.light.position[0] + this.xLightInc;//this.balls[0].position[0];
+		//engine.light.position[1] = engine.light.position[1] + this.zLightInc;//(((new Date).getTime() * 1.1) % 10000.0) / 1000;//this.balls[0].position[1] + 10.0;
+		//engine.light.position[2] = 0;//this.balls[0].position[2];
 	};
 }
 

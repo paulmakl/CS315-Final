@@ -96,3 +96,8 @@ function circlesIntersect(circle1, circle2){
 function square(a){
 	return a * a;
 }
+
+
+function clamp(val, min, max) {
+	return Math.max(min, Math.min(val, max));
+}

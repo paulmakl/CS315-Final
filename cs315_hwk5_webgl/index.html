@@ -57,6 +57,18 @@ $(document).ready(function() {
 
 
 	/*
+	 * Canvas on-click event handler
+	 */
+	$("#start").click(function() {
+		if (!breakout.started) {
+			$("#menu").fadeOut();
+			breakout.startGame();
+			$("#controlButtons").fadeIn();
+		}
+	});
+
+
+	/*
 	 * Pause button on-click event handler
 	 */
 	$("#pause").click(function() {
@@ -76,6 +88,7 @@ $(document).ready(function() {
 		engine.gameObjects = [];
 		engine.updateObjects = [];
 		BreakoutSetup();
+		$("#menu").fadeIn();
 	});
 });
 
@@ -87,12 +100,35 @@ $(document).ready(function() {
 <div id="error" style="display:none"></div>
 
 <div align="center" id="game">
+	<div id="menu">
+		<h1>Breakout Clash!</h1>
+		<p id="credits">by Paul Makl and Judd Cohen</p>
+		<h2 id="controlheader">Controls</h2>
+		<p id="help">
+			<em>Player 1</em>:<br />
+				<strong>A</strong>: Move paddle up<br/>
+				<strong>Z</strong>: Move paddle down<br/>
+			<br />
+			<em>Player 2</em>:<br/>
+				<strong>K</strong>: Move paddle up<br/>
+				<strong>M</strong>: Move paddle down<br/>
+			<br />
+			<em>Adjust camera:</em><br />
+				<strong>T</strong>: Move paddle back<br/>
+				<strong>G</strong>: Move paddle forward<br/>
+
+
+		</p>
+		<button id="start" class="gameControl">Start</button>
+	</div>
 	<canvas id="glcanvas" width="800" height="600">
 		If you see this, your browser doesn't support HTML5 canvas elements!
 	</canvas>
-	<button id="pause" class="gameControl">Pause</button>
-	<button id="reset" class="gameControl">Reset</button>
-	<p id="credits">by Paul Makl and Judd Cohen</p>
+	<div id="controlButtons">
+		<button id="pause" class="gameControl">Pause</button>
+		<button id="reset" class="gameControl">Reset</button>
+	</div>
+	
 </div>
 
 </body>

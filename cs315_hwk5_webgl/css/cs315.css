@@ -1,11 +1,45 @@
 
 body {
-	background-color: #111;
+	background-color: #000;
 	font-family: Optima, "Segoe UI", Verdana, sans-serif;
 	margin: 0;
 	padding: 0;
 }
 
+
+body p {
+	color: #fff;
+}
+
+
+#menu {
+	position: absolute;
+	z-index: 1000;
+	top: 80px;
+	left: 200px;
+	right: 200px;
+	padding: 50px;
+	background: rgba(0, 0, 0, 0.75);
+	box-shadow: 0 0 50px rgba(255, 255, 255, 0.75);
+	border-radius: 10px;
+	color: #fff;
+}
+
+#controlheader {
+	text-align: left;
+	width: 300px;
+}
+
+
+#help {
+	text-align: left;
+	width: 300px;
+}
+
+
+#controlButtons {
+	display: none;
+}
 
 button.gameControl {
 	background-color: #444;
@@ -34,9 +68,4 @@ button.gameControl:active {
 	color: #fff;
 	padding: 10px;
 	border-radius: 10px;
-}
-
-
-#credits {
-	color: #fff;
 }

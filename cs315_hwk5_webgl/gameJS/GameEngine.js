@@ -34,8 +34,12 @@ function GameEngine(canvasNode) {
 	this.mMVMatrixHandle = null;
 	this.mLightPosHandle = null;
 	this.mPositionHandle = null;
-	this.mColorHandle = null;
 	this.mNormalHandle = null;
+	// material attributes
+	this.mAmbientHandle = null;
+	this.mDiffuseHandle = null;
+	this.mSpecularHandle = null;
+	this.mShininessHandle = null;
 
 	// timing variables
 	this.lastFrameTime = 0;
@@ -197,8 +201,12 @@ function GameEngine(canvasNode) {
 		this.mMVMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uMVMatrix");
 		this.mLightPosHandle = gl.getUniformLocation(this.shaderProgramHandle, "uLightPos");
 		this.mPositionHandle = gl.getAttribLocation(this.shaderProgramHandle, "aPosition");
-		this.mColorHandle = gl.getAttribLocation(this.shaderProgramHandle, "aColor");
 		this.mNormalHandle = gl.getAttribLocation(this.shaderProgramHandle, "aNormal");
+		// material setting handles
+		this.mAmbientHandle = gl.getAttribLocation(this.shaderProgramHandle, "aAmbient");
+		this.mDiffuseHandle = gl.getAttribLocation(this.shaderProgramHandle, "aDiffuse");
+		this.mSpecularHandle = gl.getAttribLocation(this.shaderProgramHandle, "aSpecular");
+		this.mShininessHandle = gl.getAttribLocation(this.shaderProgramHandle, "aShininess");
 
 		// update all objects that requested update notifications
 		for (var i = this.updateObjects.length - 1; i >= 0; i--) {
@@ -216,7 +224,7 @@ function GameEngine(canvasNode) {
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[1]), UNIT_Y);
 			mat4.rotate(this.mModelMatrix, this.mModelMatrix, deg2rad(obj.rotation[2]), UNIT_Z);
 			mat4.scale(this.mModelMatrix, this.mModelMatrix, obj.scale);
-			this.drawMesh(this.mMeshes[obj.mesh], obj.color);
+			this.drawMesh(this.mMeshes[obj.mesh], obj.ambient, obj.diffuse, obj.specular, obj.shininess);
 		};
 
 		//this.log("end of drawFrame");
@@ -236,7 +244,7 @@ function GameEngine(canvasNode) {
 	/*
 	 * draws a 1x1x1 cube with the current transformation
 	 */
-	this.drawMesh = function(mesh, color) {
+	this.drawMesh = function(mesh, ambient, diffuse, specular, shininess) {
 		mat4.mul(this.mMVMatrix, this.camera.getViewMatrix(), this.mModelMatrix);
 		mat4.mul(this.mMVPMatrix, this.camera.getProjectionMatrix(), this.mMVMatrix);
 
@@ -257,9 +265,11 @@ function GameEngine(canvasNode) {
 		gl.vertexAttribPointer(this.mNormalHandle, this.mNormalDataSize, gl.FLOAT, false, 0, 0);
 		gl.enableVertexAttribArray(this.mNormalHandle);
 
-		// specify the color
-		var color = vec4.fromValues(color[0], color[1], color[2], 1.0);
-		gl.vertexAttrib4fv(this.mColorHandle, color);
+		// pass in the material settings
+		gl.vertexAttrib4fv(this.mAmbientHandle, vec4.fromValues(ambient[0], ambient[1], ambient[2], 1.0));
+		gl.vertexAttrib4fv(this.mDiffuseHandle, vec4.fromValues(diffuse[0], diffuse[1], diffuse[2], 1.0));
+		gl.vertexAttrib4fv(this.mSpecularHandle, vec4.fromValues(specular[0], specular[1], specular[2], 1.0));
+		gl.vertexAttrib1fv(this.mShininessHandle, [shininess]);
 
 		// draw as an indexed buffer
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.indexBuffer);
