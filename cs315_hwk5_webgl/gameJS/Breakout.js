@@ -33,6 +33,7 @@ function Breakout() {
 	this.rotTimer = 0;
 	this.moveTimer = 0;
 	this.dirFlipX = true;
+	this.paused = false;
 	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
 	//this.startPos2 = [7, 0, 5, 3, 1, 1];
 	this.startPos1 = [-7, 0, 5, 0, -1, -1];
@@ -227,6 +228,12 @@ function Breakout() {
 				engine.camera.recalculate();
 			//}
 		}
+
+		if (this.paused) return;
+		// ========================================================================
+		//  Everything past this point will NOT occur if the game is paused
+		// ========================================================================
+
 		// check up/down keys for player 1
 		if (input.keyIsDown("M")) {
 			if(this.paddle1.position[2] < 5){

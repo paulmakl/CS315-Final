@@ -6,6 +6,29 @@ body {
 	padding: 0;
 }
 
+
+button.gameControl {
+	background-color: #444;
+	border: 1px solid #ccc;
+	width: 150px;
+	padding: 8px;
+	margin: 15px 15px 0 15px;
+	border-radius: 3px;
+	box-shadow: 0 0 8px #999;
+	background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.25));
+
+	font-family: Optima, "Segoe UI", Verdana, sans-serif;
+	font-size: 18px;
+	color: #fff;
+}
+
+
+/* flip the gradient while the user is clicking the button for a depressed button look */
+button.gameControl:active {
+	background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.1));
+}
+
+
 #error {
 	background: #c00;
 	color: #fff;
