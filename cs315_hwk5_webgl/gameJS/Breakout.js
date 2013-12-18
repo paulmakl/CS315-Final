@@ -119,14 +119,14 @@ function Breakout() {
 		if (input.keyIsDown("T")) {
 			//if(engine.camera.position[2] < 10){
 				engine.camera.position[2] += 5 * timeSinceLastFrame;
-				engine.camera.position[1] -= 5 * timeSinceLastFrame;
+				engine.camera.lookAt[2] -= 5 * timeSinceLastFrame;
 				engine.camera.recalculate();
 			//}
 		}
 		if (input.keyIsDown("G")) {
 			//if(engine.camera.position[2] > -10){
 				engine.camera.position[2] -= 5 * timeSinceLastFrame;
-				engine.camera.position[1] += 5 * timeSinceLastFrame;
+				engine.camera.lookAt[2] += 5 * timeSinceLastFrame;
 				engine.camera.recalculate();
 			//}
 		}
