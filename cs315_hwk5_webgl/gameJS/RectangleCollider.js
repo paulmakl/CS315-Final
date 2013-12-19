@@ -17,6 +17,7 @@ function RectangleCollider(obj, width, height, paddle) {
     }else{
 	this.rect = [1, 1];
     }
+    this.dir = 0;
     if(paddle){
 	    this.paddle = true;
     }else{

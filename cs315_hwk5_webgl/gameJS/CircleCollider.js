@@ -30,6 +30,9 @@ function CircleCollider(obj, radius) {
 	         lineIntersectsCircle(points[2], points[3], origin, this.radius) ){
 		this.gameObject.xdir = this.gameObject.xdir * -1;
 		if(col.paddle){
+			if(col.dir != 0){
+				this.gameObject.ydir = col.dir;
+			}
 			if (col.gameObject.position[2] > this.gameObject.position[2] + breakout.topfifths ||
 			    col.gameObject.position[2] < this.gameObject.position[2] - breakout.topfifths){
 				this.gameObject.ySpeed = breakout.extremeBounce;
@@ -45,6 +48,9 @@ function CircleCollider(obj, radius) {
 	    //if colliding on sides
 	    if( lineIntersectsCircle(points[1], points[2], origin, this.radius) ||
 	     	lineIntersectsCircle(points[3], points[0], origin, this.radius)  ){
+			if(col.dir != 0){
+				this.gameObject.ydir = col.dir;
+			}
 			this.gameObject.ydir = this.gameObject.ydir * -1;
 			this.gameObject.position[2] += this.yerror * this.gameObject.ydir * timeSinceLastFrame;
 			colliding = true;

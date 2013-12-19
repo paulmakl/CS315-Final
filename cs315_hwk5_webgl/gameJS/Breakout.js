@@ -321,17 +321,25 @@ function Breakout() {
 		// check up/down keys for player 1
 		if (input.keyIsDown("Z")) {
 			this.paddle1.position[2] = paddleClamp(this.paddle1.position[2] + (this.paddleSpeed * timeSinceLastFrame));
+			this.paddle1.collider.dir = 1;
 		}
 		else if (input.keyIsDown("A")) {
 			this.paddle1.position[2] = paddleClamp(this.paddle1.position[2] - (this.paddleSpeed * timeSinceLastFrame));
+			this.paddle1.collider.dir = -1;
+		}else{
+			this.paddle1.collider.dir = 0;
 		}
 
 		// check up/down keys for player 2
 		if (input.keyIsDown("M")) {
 			this.paddle2.position[2] = paddleClamp(this.paddle2.position[2] + (this.paddleSpeed * timeSinceLastFrame));
+			this.paddle2.collider.dir = 1;
 		}
 		else if (input.keyIsDown("K")) {
 			this.paddle2.position[2] = paddleClamp(this.paddle2.position[2] - (this.paddleSpeed * timeSinceLastFrame));
+			this.paddle2.collider.dir = -1;
+		}else{
+			this.paddle1.collider.dir = 0;
 		}
 		// test collisions for each ball
 		for (var i=0; i < this.balls.length; i++) {
