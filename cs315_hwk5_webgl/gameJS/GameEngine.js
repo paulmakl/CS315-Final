@@ -26,12 +26,14 @@ function GameEngine(canvasNode) {
 	this.mModelMatrix = mat4.create();
 	this.mMVMatrix = mat4.create();
 	this.mMVPMatrix = mat4.create();
+	this.mNormalMatrix = mat4.create();
 	// mProjectionMatrix and mViewMatrix is managed by the camera now, get it
 	// with this.camera.getProjectionMatrix() and this.camera.getViewMatrix()
 
 	//attribute handles
 	this.mMVPMatrixHandle = null;
 	this.mMVMatrixHandle = null;
+	this.mNormalMatrixHandle = null;
 	this.mLightPosHandle = null;
 	this.mPositionHandle = null;
 	this.mNormalHandle = null;
@@ -199,6 +201,7 @@ function GameEngine(canvasNode) {
 		// grab handles
 		this.mMVPMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uMVPMatrix");
 		this.mMVMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uMVMatrix");
+		this.mNormalMatrixHandle = gl.getUniformLocation(this.shaderProgramHandle, "uNormalMatrix");
 		this.mLightPosHandle = gl.getUniformLocation(this.shaderProgramHandle, "uLightPos");
 		this.mPositionHandle = gl.getAttribLocation(this.shaderProgramHandle, "aPosition");
 		this.mNormalHandle = gl.getAttribLocation(this.shaderProgramHandle, "aNormal");
@@ -248,9 +251,14 @@ function GameEngine(canvasNode) {
 		mat4.mul(this.mMVMatrix, this.camera.getViewMatrix(), this.mModelMatrix);
 		mat4.mul(this.mMVPMatrix, this.camera.getProjectionMatrix(), this.mMVMatrix);
 
+		// calculate a matrix for rotating the normal in the shader
+		mat4.invert(this.mNormalMatrix, this.mModelMatrix);
+		mat4.transpose(this.mNormalMatrix, this.mNormalMatrix);
+
 		// Pass in the combined matrix.
 		gl.uniformMatrix4fv(this.mMVMatrixHandle, false, this.mMVMatrix);
 		gl.uniformMatrix4fv(this.mMVPMatrixHandle, false, this.mMVPMatrix);
+		gl.uniformMatrix4fv(this.mNormalMatrixHandle, false, this.mNormalMatrix);
 
 		// Pass in light positions
 		gl.uniform3f(this.mLightPosHandle, this.light.position[0], this.light.position[1], this.light.position[2]);

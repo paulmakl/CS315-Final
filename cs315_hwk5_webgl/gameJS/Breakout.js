@@ -41,6 +41,10 @@ var Color = {
 function Breakout() {
 	var self = this; // hold on to a reference to the current instance in case 'this' gets overwritten
 
+	this.started = false;
+	this.paused = false;
+	this.movingLight = false;
+
 	// GameObjects:
 	this.paddle1Score = 0;
 	this.paddle2Score = 0;
@@ -48,7 +52,7 @@ function Breakout() {
 	this.deco = []; // decoration models
 	this.menuball = null;
 
-	this.ballRotationSpeed = 150;
+	this.ballRotationSpeed = 200;
 
 	// gameplay variables
 	this.paddleSpeed = 8.5;
@@ -65,7 +69,6 @@ function Breakout() {
 	//this.ball = null;
 	this.paddle1 = null;
 	this.paddle2 = null;
-	//this.blockStartingPositions = [[0,0,5],[0,0,4],[0,0,3],[0,0,-5]];
 	this.blockStartingPositions = [];
 	this.blocks = [];
 	this.balls = []; // hueh hueh hueh
@@ -76,10 +79,6 @@ function Breakout() {
 	this.moveTimer = 0;
 	this.ballRotationTimer = 0;
 	this.dirFlipX = true;
-	this.started = false;
-	this.paused = false;
-	//this.startPos1 = [-7, 0, 5, 3, -1, -1];
-	//this.startPos2 = [7, 0, 5, 3, 1, 1];
 	this.startPos1 = [-7, 0, 5, 0, -1, -1];
 	this.startPos2 = [7, 0, 5, 0, 1, -1];
 	this.starts = [this.startPos1, this.startPos2]
@@ -101,7 +100,11 @@ function Breakout() {
 		engine.light.position = [0, 10, 0];
 
 		// place decoration meshes
-		this.createDecoration("table", "PlayingField", [0, 0, 0]);
+		var table = this.createDecoration("table", "PlayingField", [0, 0, 0]);
+		table.diffuse = Color.get("bg", "dark");
+		table.specular = Color.get("bg", "desat");
+		table.shininess = 100;
+
 		this.menuball = this.createDecoration("menuball", "Ball", [0, 5.5, 0], Color.get("bg", "main"));
 		this.menuball.scale = [8, 8, 8];
 
@@ -144,17 +147,17 @@ function Breakout() {
 		this.paddle1 = new GameObject("paddle1", "Paddle");
 		this.paddle1.collider = new RectangleCollider(this.paddle1, 0.6552, 4.608, true);
 		this.paddle1.position = [-11, 0, 0];
-		this.paddle1.diffuse = Color.get("p1", "dark");
+		this.paddle1.diffuse = Color.get("p1", "main");
 		engine.addGameObject(this.paddle1);
 
 		this.paddle2 = new GameObject("paddle2", "Paddle");
 		this.paddle2.collider = new RectangleCollider(this.paddle2, 0.6552, 4.608, true);// last argument states that it is a paddle
 		this.paddle2.position = [11, 0, 0];
 		this.paddle2.rotation = [0, 180, 0];
-		this.paddle2.diffuse = Color.get("p2", "dark");
+		this.paddle2.diffuse = Color.get("p2", "main");
 		engine.addGameObject(this.paddle2);
 
-		// tell the engine we want update() to get called every frame
+		// tell the engine we want our update() method to get called every frame
 		engine.addUpdateObject(this);
 	};
 
@@ -189,6 +192,7 @@ function Breakout() {
 	 * Update the scores with the specified values
 	 */
 	this.updateScoreboard = function(p1score, p2score) {
+		// scoreboard positions per player
 		var p1pos = [-5, 3, -6];
 		var p2pos = [5, 3, -6];
 
@@ -198,7 +202,8 @@ function Breakout() {
 		};
 		this.scoreboard = []; // clear array
 
-		// helper function to split an int into a array of digits
+		// helper function to split an int into a array of single digits
+		// we need this because we have one model per digit (1, 2, 3, etc)
 		function splitDigits(num) {
 			// helper function to get one individual digit
 			function getDigit(n, i) { return Math.floor(n / Math.pow(10, i - 1)) % 10; }
@@ -260,6 +265,8 @@ function Breakout() {
 		//console.log(key);
 		//console.log(evt);
 	};
+
+
 	/*
 	 * removes a block from the blocks list
 	 */
@@ -270,6 +277,7 @@ function Breakout() {
 		}
 	}
 
+
 	/*
 	 * add a block to the list of blocks
 	 */
@@ -277,12 +285,16 @@ function Breakout() {
 		this.blocks.push(block);
 	}
 
+
 	this.addBall = function(ball){
 		console.log(ball);
 		this.balls.push(ball);
 	}
 
 
+	/*
+	 * Main game update loop. All game logic is in here.
+	 */
 	this.update = function(timeSinceLastFrame) {
 		// increment ball rotation timer
 		this.ballRotationTimer += timeSinceLastFrame;
@@ -304,6 +316,7 @@ function Breakout() {
 			}
 		}
 
+		// rotate the big ball before the game starts
 		if (!this.started) {
 			this.menuball.rotation[2] = -15 * this.ballRotationTimer;
 		}
@@ -403,20 +416,23 @@ function Breakout() {
 		//check top and bootom boundries
 		// put the light right above the ball
 		
-		if(engine.light.position[1] > 10 || engine.light.position[1] < 1){
-			this.zLightInc *= -1;	
+		if (this.movingLight) {
+			if (engine.light.position[1] > 10 || engine.light.position[1] < 1) {
+				this.zLightInc *= -1;
+			}
+			if (engine.light.position[0] > 11 || engine.light.position[0] < -11) {
+				this.xLightInc *= -1;
+			}
+			engine.light.position[0] = engine.light.position[0] + this.xLightInc;
+			engine.light.position[1] = engine.light.position[1] + this.zLightInc;
+			engine.light.position[2] = 0;
 		}
-		if(engine.light.position[0] > 11 || engine.light.position[0] < -11){
-			this.xLightInc *= -1;	
-		}
-		//engine.light.position[0] = engine.light.position[0] + this.xLightInc;//this.balls[0].position[0];
-		//engine.light.position[1] = engine.light.position[1] + this.zLightInc;//(((new Date).getTime() * 1.1) % 10000.0) / 1000;//this.balls[0].position[1] + 10.0;
-		//engine.light.position[2] = 0;//this.balls[0].position[2];
 	};
 }
 
 
 
+// helper function to create an instance of the game class at the correct global
 function BreakoutSetup() {
 	breakout = new Breakout();
 	breakout.init();

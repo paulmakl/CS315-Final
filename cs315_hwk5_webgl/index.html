@@ -90,6 +90,21 @@ $(document).ready(function() {
 		BreakoutSetup();
 		$("#menu").fadeIn();
 	});
+
+
+	/*
+	 * Reset button on-click event handler
+	 */
+	$("#light").click(function() {
+		breakout.movingLight = !breakout.movingLight; // toggle light animation
+
+		if (breakout.movingLight == true) {
+			$(this).html("Fixed Light");
+		}
+		else {
+			$(this).html("Animated Light");
+		}
+	});
 });
 
 </script>
@@ -116,8 +131,6 @@ $(document).ready(function() {
 			<em>Adjust camera:</em><br />
 				<strong>T</strong>: Move camera back<br/>
 				<strong>G</strong>: Move camera forward<br/>
-
-
 		</p>
 		<button id="start" class="gameControl">Start</button>
 	</div>
@@ -127,6 +140,7 @@ $(document).ready(function() {
 	<div id="controlButtons">
 		<button id="pause" class="gameControl">Pause</button>
 		<button id="reset" class="gameControl">Reset</button>
+		<button id="light" class="gameControl">Animated Light</button>
 	</div>
 	
 </div>

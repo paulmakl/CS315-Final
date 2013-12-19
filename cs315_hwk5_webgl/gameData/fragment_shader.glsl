@@ -1,8 +1,9 @@
 precision mediump float;  // don't need high precision
 
+varying mat4 oNormalMatrix;
 varying vec4 oPosition;
 varying vec3 oNormal;
-varying vec3 oLightPos;
+varying vec3 oLightDir;
 // material settings:
 varying vec4 oAmbient;
 varying vec4 oDiffuse;
@@ -14,14 +15,11 @@ void main() {
 	// finalcolor starts with ambient
 	vec4 final = oAmbient;
 
-	// prenormalize the normal
-	vec3 normal = normalize(oNormal);
-
-	// figure out the light direction in relation to world space
-    vec3 lightDir = normalize(oLightPos - (oPosition.xyz / oPosition.w));
+	// rotate normal if object is rotated
+	vec3 normal = normalize(mat3(oNormalMatrix) * oNormal);
 
     // get the ndotl value
-	float ndotl = max(0.0, dot(normal, lightDir));
+	float ndotl = max(0.0, dot(normal, oLightDir));
 
 	// =========
 	//  DIFFUSE
@@ -32,12 +30,12 @@ void main() {
 	// ==========
 	//  SPECULAR
 	// ==========
-	vec3 vReflection = normalize(reflect(-lightDir, normal));
+	vec3 vReflection = normalize(reflect(-oLightDir, normal));
 	float spec = max(0.0, dot(normal, vReflection));
 
 	if (ndotl > 0.0) {
 		float fSpec = pow(spec, oShininess);
-		final += fSpec;
+		final += fSpec * oSpecular;
 	}
 
 	// final output
