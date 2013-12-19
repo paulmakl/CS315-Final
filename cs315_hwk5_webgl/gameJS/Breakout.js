@@ -404,11 +404,11 @@ function Breakout() {
 			// check if ball is outside of map
 			if(this.balls[i].position[0] > xmax){
 				this.updateScoreboard(this.paddle1Score + 1, this.paddle2Score);
-				this.balls[i].position = [-7,0,0,0];
+				this.balls[i].position = [7,0,0];
 				this.paddle1Score += 1;
 			}else if(this.balls[i].position[0] < -xmax){
 				this.updateScoreboard(this.paddle1Score, this.paddle2Score + 1);
-				this.balls[i].position = [7,0,0];
+				this.balls[i].position = [-7,0,0];
 				this.paddle2Score += 1;
 			}
 		}
